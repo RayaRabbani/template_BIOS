@@ -14,6 +14,7 @@
     "@base-ui/react": "^1.0.0",
     "@casl/ability": "^6.7.5",
     "@casl/react": "^5.0.0",
+    "@radix-ui/react-visually-hidden": "^1.2.4",
     "@tanstack/react-query": "^5.90.16",
     "axios": "^1.13.2",
     "class-variance-authority": "^0.7.1",
