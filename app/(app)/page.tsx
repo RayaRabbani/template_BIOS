@@ -28,17 +28,7 @@ export default function Page() {
   }, [status, session, router]);
 
   if (status === 'loading') {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="relative">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-200"></div>
-            <div className="absolute top-0 left-0 h-8 w-8 animate-spin rounded-full border-2 border-transparent border-t-[#01793b]"></div>
-          </div>
-          <p className="text-sm font-medium text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return null;
