@@ -1,0 +1,140 @@
+export type HistoryItem = {
+  id: number;
+  type: "peminjaman" | "permintaan";
+  transactionNo: string;
+  slug?: string | null;
+  date: string;
+  employee: string;
+  status: "pending" | "approved" | "rejected" | "completed";
+  confirmationStatus?: string | null;
+  returnDate?: string;
+  assetName?: string;
+  assetImage?: string;
+  pic?: string;
+  no_badge?: string;
+  item?: Array<{ nama?: string; pic?: string; id?: string | number }>;
+  itemResult?: {
+    id: string;
+    transaksi_id: string;
+    kategori_id: number;
+    kompilator_id: number;
+    no_badge: string;
+    nama: string;
+    pic?: string;
+    qty: number;
+    qty_confirmation?: number;
+    qty_count?: number;
+    catatan?: string;
+    status: number;
+    is_konfirmasi?: string;
+    created_at: string;
+    updated_at: string;
+  }[];
+};
+
+export type ApiTransaksi = {
+  id?: string;
+  slug?: string;
+  kompilator_id?: number;
+  kategori_id?: number;
+  tipe?: string | null;
+  type?: string | null;
+  transactionNo?: string;
+  items?: unknown;
+  assetName?: string | null;
+  quantity?: number | string;
+  assetImage?: string | null;
+  kode_unit?: string;
+  no_transaksi?: string;
+  no_ba?: string;
+  tgl_peminjaman?: string | null;
+  tgl_pengembalian?: string | null;
+  tgl_perbaikan?: string | null;
+  no_badge?: string;
+  nama?: string | null;
+  pic?: string | null;
+  status?: string | null;
+  catatan?: string | null;
+  catatan_approval?: string | null;
+  no_badge_approval?: string | null;
+  nama_approval?: string | null;
+  pic_approval?: string | null;
+  approval_at?: string | null;
+  status_approval?: string | null;
+  catatan_konfirmasi?: string | null;
+  no_badge_konfirmasi?: string | null;
+  nama_konfirmasi?: string | null;
+  pic_konfirmasi?: string | null;
+  konfirmasi_at?: string | null;
+  status_konfirmasi?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+  tgl_permintaan?: string | null;
+  tgl_penyerahan?: string | null;
+  lokasi_id?: number;
+  gambar?: string | null;
+  itemResult?: {
+    id: string;
+    transaksi_id: string;
+    kategori_id: number;
+    kompilator_id: number;
+    no_badge: string;
+    nama: string;
+    pic?: string;
+    qty: number;
+    qty_confirmation?: number;
+    qty_count?: number;
+    catatan?: string;
+    status: number;
+    is_konfirmasi?: string;
+    created_at: string;
+    updated_at: string;
+  }[];
+};
+
+export type StatusHistory = {
+  status: string;
+  timestamp: string;
+  actor: string;
+};
+
+export type Item = {
+  name: string;
+  quantity: number;
+  image?: string;
+};
+
+export type ItemApi = {
+  id?: string;
+  transaksi_id?: string;
+  kategori_id?: number;
+  kompilator_id?: number;
+  no_badge?: string | null;
+  nama?: string | null;
+  pic?: string | null;
+  name?: string | null;
+  qty?: number | string;
+  qty_confirmation?: number | string;
+  qty_count?: number | string;
+  catatan?: string | null;
+  status?: number | string;
+  is_konfirmasi?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+};
+
+export type TransactionDetail = {
+  slug: string;
+  transactionNo: string;
+  date?: string;
+  returnDate?: string;
+  employee: string;
+  id?: string | number;
+  status?: string | null;
+  badge?: string;
+  employeePic?: string;
+  note?: string;
+  items: Item[];
+  type?: "peminjaman" | "permintaan";
+  statusHistory: StatusHistory[];
+};
