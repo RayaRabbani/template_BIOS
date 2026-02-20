@@ -3,8 +3,9 @@ import { Geist, Geist_Mono, Inter } from 'next/font/google';
 
 import { SessionProvider } from 'next-auth/react';
 
-import { AppSidebar } from '@/components/app-sidebar';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+// import { AppSidebar } from '@/components/app-sidebar';
+// import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import ConditionalSidebar from '@/components/conditional-sidebar';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { ApiProvider } from '@/providers/api-provider';
 
@@ -49,7 +50,7 @@ export default function RootLayout({
         <SessionProvider>
           <ApiProvider>
             <TooltipProvider>
-              <SidebarProvider
+              {/* <SidebarProvider
                 style={
                   {
                     '--sidebar-width': '350px',
@@ -62,7 +63,8 @@ export default function RootLayout({
                     {children}
                   </div>
                 </SidebarInset>
-              </SidebarProvider>
+              </SidebarProvider> */}
+              <ConditionalSidebar>{children}</ConditionalSidebar>
             </TooltipProvider>
           </ApiProvider>
         </SessionProvider>
