@@ -253,32 +253,34 @@ export default function ConfirmModal({
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-lg overflow-hidden rounded-sm bg-white p-0 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] dark:bg-neutral-900 dark:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.6)] [&_button[data-slot='dialog-close']]:top-5.5">
+        <DialogContent className="max-w-xl overflow-hidden rounded-md bg-white p-0 shadow-xl sm:max-w-xl dark:bg-neutral-900 dark:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.6)]">
           <div className="bg-white px-6 pt-4 dark:bg-neutral-900">
             <DialogHeader className="m-0 p-0">
-              <DialogTitle className="text-xl text-neutral-900 dark:text-neutral-50">
+              <DialogTitle className="text-xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50">
                 Konfirmasi Permintaan Barang
               </DialogTitle>
-              <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
+              <p className="mt-1 text-sm font-medium text-neutral-500 dark:text-neutral-400">
                 Silakan isi detail berikut sebelum mengajukan permintaan barang.
               </p>
             </DialogHeader>
           </div>
 
-          <ScrollArea className="max-h-[55vh] overflow-hidden rounded-t-sm">
-            <div className="mb-0 space-y-4 bg-neutral-50/60 px-6 pt-3 pb-0 text-neutral-900 dark:bg-neutral-900/80 dark:text-neutral-50">
+          <ScrollArea className="max-h-[60vh] overflow-hidden">
+            <div className="space-y-4 px-6 text-neutral-900 dark:text-neutral-50">
               <Form {...form}>
-                <Alert className="rounded-sm border bg-blue-50 p-5 shadow-sm dark:border-blue-800 dark:bg-blue-900/20">
-                  <Info className="!h-5 !w-5 text-blue-900 dark:text-blue-200" />
-                  <AlertTitle className="text-sm font-semibold text-blue-900 dark:text-blue-200">
-                    Informasi permintaan Asset
-                  </AlertTitle>
+                <Alert className="rounded-md border-blue-100 bg-blue-50 p-4 shadow-sm dark:border-blue-900/30 dark:bg-blue-900/10">
+                  <Info className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  <div className="ml-3">
+                    <AlertTitle className="text-sm font-semibold text-blue-700 dark:text-blue-300">
+                      Informasi permintaan Asset
+                    </AlertTitle>
 
-                  <AlertDescription className="mt-1 text-sm leading-relaxed text-blue-900/80 dark:text-blue-200/80">
-                    Jika Proses Persetujuan Permintaan Asset Tidak Ada Tindakan
-                    dari Atasan Selama 1×24 Jam, Maka Proses Persetujuan Akan
-                    Disetujui oleh Sistem!
-                  </AlertDescription>
+                    <AlertDescription className="mt-1 text-sm leading-relaxed text-blue-600/90 dark:text-blue-300/80">
+                      Jika Proses Persetujuan Permintaan Asset Tidak Ada
+                      Tindakan dari Atasan Selama 1×24 Jam, Maka Proses
+                      Persetujuan Akan Disetujui oleh Sistem!
+                    </AlertDescription>
+                  </div>
                 </Alert>
 
                 <div>
@@ -295,17 +297,21 @@ export default function ConfirmModal({
                       <Button
                         variant="outline"
                         className={cn(
-                          'h-11 w-full cursor-pointer justify-start rounded-sm border border-neutral-200 bg-white text-left font-normal dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-50',
-                          !tanggalPermintaan && 'text-neutral-400'
+                          'h-10 w-full cursor-pointer justify-start rounded-md border-neutral-200 bg-white px-3 text-left font-normal transition-all hover:bg-neutral-50 hover:text-neutral-900 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-50 dark:hover:bg-neutral-700',
+                          !tanggalPermintaan &&
+                            'text-neutral-500 dark:text-neutral-400'
                         )}
                       >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        <CalendarIcon className="mr-2 h-4 w-4 text-neutral-500" />
                         {tanggalPermintaan
                           ? format(tanggalPermintaan, 'PPP')
                           : 'Pilih tanggal...'}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
+                    <PopoverContent
+                      className="w-auto rounded-md p-0 shadow-lg"
+                      align="start"
+                    >
                       <Calendar
                         mode="single"
                         captionLayout="dropdown"
@@ -325,7 +331,7 @@ export default function ConfirmModal({
                     </PopoverContent>
                   </Popover>
                   {form.formState.errors.tanggalPermintaan && (
-                    <p className="mt-1 text-xs text-red-600">
+                    <p className="animate-in fade-in slide-in-from-top-1 mt-1 text-xs text-red-600">
                       {
                         form.formState.errors.tanggalPermintaan
                           ?.message as string
@@ -351,7 +357,7 @@ export default function ConfirmModal({
                           {...field}
                           rows={3}
                           placeholder="Tambahkan catatan..."
-                          className="w-full"
+                          className="w-full resize-none rounded-md border-neutral-200 bg-white placeholder:text-neutral-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:placeholder:text-neutral-500"
                         />
                       </FormControl>
                       <FormMessage />
@@ -369,35 +375,62 @@ export default function ConfirmModal({
                     type="button"
                     variant="outline"
                     onClick={() => setOpenSelect(true)}
-                    className="flex h-11 w-full cursor-pointer items-center justify-between rounded-sm border border-neutral-200 bg-white px-3 text-left dark:border-neutral-700 dark:bg-neutral-800"
+                    className="flex h-13 w-full cursor-pointer items-center justify-between rounded-md border-neutral-200 bg-white px-3 text-left shadow-sm hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:hover:bg-neutral-800"
                   >
                     <div className="flex min-w-0 items-center gap-3">
-                      <div className="flex items-center gap-3">
-                        <Avatar>
-                          {selectedApprover?.avatar ? (
-                            <AvatarImage
-                              src={selectedApprover.avatar}
-                              alt={selectedApprover.name ?? 'avatar'}
-                            />
-                          ) : (
-                            <AvatarFallback>
-                              {selectedApprover?.name
-                                ? selectedApprover.name
-                                    .split(' ')
-                                    .map(n => n[0])
-                                    .slice(0, 2)
-                                    .join('')
-                                    .toUpperCase()
-                                : '?'}
-                            </AvatarFallback>
-                          )}
+                      {selectedApprover?.avatar ? (
+                        <Avatar className="h-10 w-10 border border-neutral-100 dark:border-neutral-700">
+                          <AvatarImage
+                            src={selectedApprover.avatar}
+                            alt={selectedApprover.name ?? 'avatar'}
+                            className="object-cover object-top w-full h-full"
+                          />
+                          <AvatarFallback>
+                            {selectedApprover?.name
+                              ? selectedApprover.name
+                                  .split(' ')
+                                  .map(n => n[0])
+                                  .slice(0, 2)
+                                  .join('')
+                                  .toUpperCase()
+                              : '?'}
+                          </AvatarFallback>
                         </Avatar>
-
-                        <div className="truncate text-sm text-neutral-700 dark:text-neutral-50">
-                          {selectedApprover
-                            ? `${selectedApprover.name} (${selectedApprover.nip})`
-                            : 'Pilih atasan yang menyetujui'}
+                      ) : selectedApprover ? (
+                        <Avatar className="h-8 w-8 border border-neutral-100 dark:border-neutral-700">
+                          <AvatarFallback className="bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                            {selectedApprover.name
+                              .split(' ')
+                              .map(n => n[0])
+                              .slice(0, 2)
+                              .join('')
+                              .toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                      ) : (
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 text-neutral-400 dark:bg-neutral-800">
+                          <Info className="h-4 w-4" />
                         </div>
+                      )}
+
+                      <div className="flex flex-col truncate">
+                        <span
+                          className={cn(
+                            'text-sm font-medium',
+                            selectedApprover
+                              ? 'text-neutral-900 dark:text-neutral-50'
+                              : 'text-neutral-500 dark:text-neutral-400'
+                          )}
+                        >
+                          {selectedApprover
+                            ? selectedApprover.name
+                            : 'Pilih atasan'}
+                        </span>
+                        {selectedApprover && (
+                          <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                            {selectedApprover.nip}
+                          </span>
+                        )}
                       </div>
                     </div>
 
@@ -405,7 +438,7 @@ export default function ConfirmModal({
                   </Button>
 
                   {form.formState.errors.approverId && (
-                    <p className="mt-1 text-xs text-red-600">
+                    <p className="animate-in fade-in slide-in-from-top-1 mt-1 text-xs text-red-600">
                       {form.formState.errors.approverId.message as string}
                     </p>
                   )}
@@ -421,14 +454,14 @@ export default function ConfirmModal({
             </div>
           </ScrollArea>
 
-          <div className="flex justify-end bg-white px-3 pt-0 pb-3 dark:border-neutral-700 dark:bg-neutral-900">
+          <div className="sticky bottom-0 z-10 flex justify-end bg-white px-3 pt-0 pb-3 dark:border-neutral-800 dark:bg-neutral-900">
             <Button
-              className="h-9 cursor-pointer rounded-sm bg-[#01793b] px-8 text-sm font-medium text-white shadow-sm hover:bg-[#016c33] dark:bg-[##01793b] dark:text-white dark:hover:bg-[#043014]"
+              className="h-10 cursor-pointer rounded-md bg-[#01793b] px-6 text-sm font-medium text-white shadow-sm transition-all hover:bg-[#016c33] hover:shadow-md active:scale-[0.98] dark:bg-[#01793b] dark:text-white dark:hover:bg-[#043014]"
               onClick={handleSubmit}
               disabled={isSubmitting}
             >
-              <ClipboardCopy className="h-4 w-4" />
-              {isSubmitting ? 'Menyimpan...' : 'Simpan'}
+              <ClipboardCopy className="mr-2 h-4 w-4" />
+              {isSubmitting ? 'Menyimpan...' : 'Simpan Permintaan'}
             </Button>
           </div>
         </DialogContent>

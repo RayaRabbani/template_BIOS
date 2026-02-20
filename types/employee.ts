@@ -41,6 +41,7 @@ export type EmployeeOrganization = {
   alias?: string;
   aliases?: string[];
   leader?: EmployeeLeader;
+  parent?: EmployeeOrganization;
 };
 
 export type EmployeeStructure = {

@@ -6,10 +6,18 @@ import type { Asset } from '@/types/asset';
 import type { EmployeeApi } from '@/types/employee';
 import type { ProdukApi } from '@/types/produk';
 
-const DEMPLON_AUTH = {
-  username: process.env.DEMPLON_USERNAME!,
-  password: process.env.DEMPLON_PASSWORD!,
-};
+function getDemplonAuth() {
+  const username = process.env.NEXT_PUBLIC_DEMPLON_USERNAME || 'demplonadmin';
+  const password = process.env.NEXT_PUBLIC_DEMPLON_PASSWORD || '9845802-fa98458e-817d-48c3-877d-5d3f23c0ef23';
+
+  if (!username || !password) {
+    throw new Error(
+      'NEXT_PUBLIC_DEMPLON_USERNAME and NEXT_PUBLIC_DEMPLON_PASSWORD must be set'
+    );
+  }
+
+  return { username, password };
+}
 
 export async function getKategori(
   q?: string,
@@ -269,7 +277,7 @@ export async function getEmployeeById(
 ): Promise<EmployeeApi> {
   const url = `https://demplon.pupuk-kujang.co.id/admin/api/hr/employees/${id}/`;
   const res = await axios.get<EmployeeApi>(url, {
-    auth: DEMPLON_AUTH,
+    auth: getDemplonAuth(),
   });
   return res.data as EmployeeApi;
 }
@@ -277,7 +285,7 @@ export async function getEmployeeById(
 export async function getAllEmployees(): Promise<EmployeeApi[]> {
   const url = 'https://demplon.pupuk-kujang.co.id/admin/api/hr/employees/';
   const res = await axios.get<EmployeeApi[]>(url, {
-    auth: DEMPLON_AUTH,
+    auth: getDemplonAuth(),
   });
   return res.data as EmployeeApi[];
 }
@@ -289,8 +297,9 @@ export async function getEmployeesByRoles(
   const roleParams = roleIds
     .map(id => `roleid[]=${encodeURIComponent(id)}`)
     .join('&');
+
   const res = await axios.get<EmployeeApi[]>(`${url}?${roleParams}`, {
-    auth: DEMPLON_AUTH,
+    auth: getDemplonAuth(),
   });
   return res.data as EmployeeApi[];
 }
@@ -308,7 +317,7 @@ export async function searchEmployeesByRoles(
   const fullUrl = `${url}?${roleParams}${searchParam}`;
 
   const res = await axios.get<EmployeeApi[]>(fullUrl, {
-    auth: DEMPLON_AUTH,
+    auth: getDemplonAuth(),
   });
   return res.data as EmployeeApi[];
 }
@@ -484,7 +493,7 @@ export async function sendApproverNotification(payload: {
   form.append('body', payload.body);
 
   const res = await axios.post(url, form.toString(), {
-    auth: DEMPLON_AUTH,
+    auth: getDemplonAuth(),
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },

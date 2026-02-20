@@ -212,7 +212,7 @@ export default function HistoryPage() {
         setLoading(false);
       }
     },
-    []
+    [session?.user?.id]
   );
 
   const handleRefreshAfterCancel = useCallback(async () => {
@@ -396,7 +396,7 @@ export default function HistoryPage() {
                 placeholder="Filter..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                className="h-8 w-full rounded-lg rounded-sm border border-gray-300 bg-white px-3 py-2 text-sm text-black placeholder-gray-500 hover:bg-gray-50 focus:border-[#01793b] focus:ring-1 focus:ring-[#01793b] focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white dark:placeholder-neutral-400 dark:hover:bg-neutral-700"
+                className="h-8 w-full rounded-lg rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-black placeholder-gray-500 hover:bg-gray-50 focus:border-[#01793b] focus:ring-1 focus:ring-[#01793b] focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white dark:placeholder-neutral-400 dark:hover:bg-neutral-700"
               />
             </div>
 
@@ -566,7 +566,7 @@ export default function HistoryPage() {
                     ].map(c => (
                       <div
                         key={c.key}
-                        className="flex items-center justify-between rounded-sm p-1.5 transition hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                        className="flex items-center justify-between rounded-md p-1.5 transition hover:bg-neutral-100 dark:hover:bg-neutral-800"
                       >
                         <span className="text-sm">{c.label}</span>
 
@@ -586,7 +586,7 @@ export default function HistoryPage() {
               </Popover>
             </div>
           </div>
-          <div className="relative hidden overflow-hidden rounded-sm border border-neutral-200 bg-white/50 backdrop-blur md:block dark:border-neutral-800 dark:bg-neutral-900/50">
+          <div className="relative hidden overflow-hidden rounded-md border border-neutral-200 bg-white/50 backdrop-blur md:block dark:border-neutral-800 dark:bg-neutral-900/50">
             {loading ? (
               <div className="p-6">
                 <Table>
@@ -716,7 +716,7 @@ export default function HistoryPage() {
                                       return (
                                         <div
                                           key={String(a.id) + String(i)}
-                                          className="relative h-12 w-12 cursor-zoom-in overflow-hidden rounded-sm border border-neutral-200 bg-white dark:border-neutral-700"
+                                          className="relative h-12 w-12 cursor-zoom-in overflow-hidden rounded-md border border-neutral-200 bg-white dark:border-neutral-700"
                                         >
                                           <Image
                                             src={getValidImageUrl(a.pic)}
@@ -803,6 +803,7 @@ export default function HistoryPage() {
                                     <AvatarImage
                                       src={item.pic}
                                       alt={item.employee ?? 'avatar'}
+                                      className="h-full w-full object-cover object-top"
                                     />
                                   ) : (
                                     <AvatarFallback>
@@ -908,7 +909,7 @@ export default function HistoryPage() {
                                     }
                                     aria-label="View details"
                                     className={cn(
-                                      'flex size-8 cursor-pointer items-center justify-center rounded-sm border shadow-sm transition',
+                                      'flex size-8 cursor-pointer items-center justify-center rounded-md border shadow-sm transition',
                                       'border-gray-300 bg-white text-black hover:bg-gray-100',
                                       'dark:border-neutral-700 dark:bg-black dark:text-white dark:hover:bg-neutral-800'
                                     )}
@@ -934,7 +935,7 @@ export default function HistoryPage() {
         <div className="space-y-4 p-2 md:hidden">
           {loading ? (
             Array.from({ length: 4 }).map((_, i) => (
-              <Card key={i} className="rounded-sm p-4">
+              <Card key={i} className="rounded-md p-4">
                 <div className="flex items-start gap-4">
                   <div className="flex-1">
                     <Skeleton className="mb-2 h-4 w-40" />
@@ -944,7 +945,7 @@ export default function HistoryPage() {
               </Card>
             ))
           ) : filtered.length === 0 ? (
-            <Card className="w-full rounded-sm border border-neutral-200 bg-white/80 p-6 text-center shadow-md dark:border-neutral-800 dark:bg-neutral-900/70">
+            <Card className="w-full rounded-md border border-neutral-200 bg-white/80 p-6 text-center shadow-md dark:border-neutral-800 dark:bg-neutral-900/70">
               <Inbox
                 size={36}
                 className="mx-auto text-neutral-400 dark:text-neutral-500"
@@ -960,7 +961,7 @@ export default function HistoryPage() {
             paginated.map(item => (
               <Card
                 key={item.id}
-                className="overflow-hidden rounded-sm border border-neutral-200 bg-white/80 p-4 shadow-md backdrop-blur-sm transition hover:shadow-lg dark:border-neutral-800 dark:bg-neutral-900/70"
+                className="overflow-hidden rounded-md border border-neutral-200 bg-white/80 p-4 shadow-md backdrop-blur-sm transition hover:shadow-lg dark:border-neutral-800 dark:bg-neutral-900/70"
               >
                 <div className="space-y-3 p-4">
                   <div className="flex items-center justify-between">
@@ -1070,7 +1071,7 @@ export default function HistoryPage() {
                         )
                       }
                       className={cn(
-                        'flex size-8 cursor-pointer items-center justify-center rounded-sm border shadow-sm transition',
+                        'flex size-8 cursor-pointer items-center justify-center rounded-md border shadow-sm transition',
                         'border-gray-300 bg-white text-black hover:bg-gray-100',
                         'dark:border-neutral-700 dark:bg-black dark:text-white dark:hover:bg-neutral-800'
                       )}
@@ -1127,7 +1128,7 @@ export default function HistoryPage() {
               <DialogTitle>Preview Image</DialogTitle>
             </VisuallyHidden>
 
-            <div className="relative h-[80vh] w-full max-w-4xl overflow-hidden rounded-sm bg-transparent">
+            <div className="relative h-[80vh] w-full max-w-4xl overflow-hidden rounded-md bg-transparent">
               {previewImage && (
                 <Image
                   src={previewImage}

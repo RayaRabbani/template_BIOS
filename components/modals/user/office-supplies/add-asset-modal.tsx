@@ -194,20 +194,22 @@ export default function AddOfficeSupplyModal({
   return (
     <>
       <Dialog open={open} onOpenChange={onClose}>
-        <DialogContent className="my-4 w-[90%] overflow-hidden rounded-sm border border-neutral-200 bg-white p-0 shadow-xl sm:my-2 sm:max-w-md md:max-w-lg dark:border-neutral-700 dark:bg-neutral-900 [&_button[data-slot='dialog-close']]:top-5">
-          <div className="sticky top-0 border-neutral-200 bg-white px-6 pt-4 dark:border-neutral-700 dark:bg-neutral-900">
+        <DialogContent className="my-4 w-[90%] overflow-hidden rounded-md border border-neutral-200 bg-white p-0 shadow-xl sm:my-2 sm:max-w-md md:max-w-lg dark:border-neutral-700 dark:bg-neutral-900">
+          <div className="sticky top-0 border-neutral-100 bg-white px-6 pt-4 dark:border-neutral-800 dark:bg-neutral-900">
             <DialogHeader>
-              <DialogTitle className="text-lg">Tambahkan Barang</DialogTitle>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+              <DialogTitle className="text-lg font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+                Tambahkan Barang
+              </DialogTitle>
+              <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
                 Berikut detail barang yang anda akan Minta
               </p>
             </DialogHeader>
           </div>
 
-          <ScrollArea className="max-h-[55vh] overflow-hidden rounded-sm">
+          <ScrollArea className="max-h-[55vh]">
             <div className="space-y-4 px-6 pt-2 pb-0">
               <div
-                className="group relative h-44 w-full cursor-zoom-in overflow-hidden rounded-sm border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800"
+                className="group relative h-54 w-full cursor-zoom-in overflow-hidden rounded-md border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800"
                 onClick={() => setOpenPreview(true)}
                 role="button"
                 tabIndex={0}
@@ -328,17 +330,17 @@ export default function AddOfficeSupplyModal({
                           open={openUnitPicker}
                           onOpenChange={setOpenUnitPicker}
                         >
-                          <DialogContent className="w-[92%] max-w-sm overflow-hidden rounded-sm border border-neutral-200 bg-white p-0 shadow-xl dark:border-neutral-700 dark:bg-neutral-900">
-                            <div className="border-b border-neutral-200 px-3 py-3 dark:border-neutral-700">
-                              <DialogTitle className="text-base font-semibold">
+                          <DialogContent className="w-[92%] max-w-sm overflow-hidden rounded-md border border-neutral-200 bg-white p-0 shadow-xl dark:border-neutral-700 dark:bg-neutral-900">
+                            <div className="border-b border-neutral-100 bg-white px-4 py-3 dark:border-neutral-800">
+                              <DialogTitle className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
                                 Pilih Satuan
                               </DialogTitle>
-                              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                              <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
                                 Pilih satuan barang
                               </p>
                             </div>
 
-                            <div className="max-h-80 space-y-2 overflow-y-auto px-3 py-2">
+                            <div className="max-h-80 space-y-2 overflow-y-auto px-4 py-3">
                               <Input
                                 placeholder="Search Satuan..."
                                 value={unitSearch}
@@ -362,18 +364,20 @@ export default function AddOfficeSupplyModal({
                                         key={u}
                                         variant="ghost"
                                         onClick={() => setSelectedUnit(u)}
-                                        className={`flex w-full cursor-pointer items-center justify-between rounded-sm border px-3 py-2 transition-all ${
+                                        className={`flex w-full cursor-pointer items-center justify-between rounded-md border px-3 py-2 transition-all ${
                                           active
-                                            ? 'border-neutral-300 bg-neutral-900/5 dark:bg-neutral-800'
-                                            : 'border-neutral-200 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800'
+                                            ? 'border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-900 dark:bg-emerald-900/10 dark:text-emerald-100'
+                                            : 'border-neutral-200 hover:border-emerald-100 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:border-emerald-900 dark:hover:bg-neutral-800'
                                         }`}
                                       >
-                                        <span className="text-sm">{u}</span>
+                                        <span className="text-sm font-medium">
+                                          {u}
+                                        </span>
 
                                         <div
-                                          className={`flex h-5 w-5 items-center justify-center rounded-full border-2 transition-all ${
+                                          className={`flex h-5 w-5 items-center justify-center rounded-full border transition-all ${
                                             active
-                                              ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
+                                              ? 'border-emerald-600 bg-emerald-600 text-white'
                                               : 'border-neutral-300 dark:border-neutral-600'
                                           }`}
                                         >
@@ -396,9 +400,9 @@ export default function AddOfficeSupplyModal({
                               </div>
                             </div>
 
-                            <div className="border-t border-neutral-200 bg-white px-3 py-3 dark:border-neutral-700 dark:bg-neutral-900">
+                            <div className="border-t border-neutral-100 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-neutral-900">
                               <Button
-                                className="w-full cursor-pointer rounded-sm bg-black text-white dark:bg-white dark:text-black"
+                                className="w-full cursor-pointer rounded-md bg-[#01793b] text-white hover:bg-[#016c33] dark:bg-[#01793b] dark:text-white dark:hover:bg-[#043014]"
                                 onClick={() => {
                                   if (selectedUnit) {
                                     setUnit(selectedUnit);
@@ -485,9 +489,9 @@ export default function AddOfficeSupplyModal({
             </div>
           </ScrollArea>
 
-          <div className="opt-0 sticky bottom-0 z-10 bg-white px-6 pb-3 dark:border-neutral-700 dark:bg-neutral-900">
+          <div className="opt-0 sticky bottom-0 z-10 border-neutral-100 bg-white px-6 pb-3 dark:border-neutral-800 dark:bg-neutral-900">
             <Button
-              className="w-full cursor-pointer rounded-sm bg-[#01793b] bg-black text-white hover:bg-[#016c33] dark:bg-[##01793b] dark:text-white dark:hover:bg-[#043014]"
+              className="w-full cursor-pointer rounded-md bg-[#01793b] font-medium text-white shadow-sm hover:bg-[#016c33] dark:bg-[#01793b] dark:text-white dark:hover:bg-[#043014]"
               onClick={handleSubmit}
               disabled={loading}
             >

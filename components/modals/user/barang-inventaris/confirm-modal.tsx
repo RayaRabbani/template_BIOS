@@ -293,15 +293,21 @@ export default function ConfirmModal({
       try {
         try {
           const emp = await getEmployeeById(session?.user?.id || '0');
-          const leader = emp?.organization?.leader;
-          if (leader) {
-            const idVal = leader.id ?? leader?.nip ?? leader?.no_badge ?? null;
-            setLeaderBadge(idVal ? String(idVal) : null);
-            setLeaderName(leader.name ?? null);
-            setLeaderPic(leader.pic ?? null);
-          }
-
           if (emp) {
+            const orgLeader = emp?.organization?.leader ?? null;
+            const parentLeader = emp?.organization?.parent?.leader ?? null;
+
+            // Prefer parent.leader when available (e.g., Rubby in parent)
+            const approver = parentLeader ? parentLeader : orgLeader;
+
+            if (approver) {
+              const idVal =
+                approver.id ?? approver?.nip ?? approver?.no_badge ?? null;
+              setLeaderBadge(idVal ? String(idVal) : null);
+              setLeaderName(approver.name ?? null);
+              setLeaderPic(approver.pic ?? null);
+            }
+
             setEmployeeData({
               kode_unit: emp.organization?.id
                 ? String(emp.organization.id)
@@ -364,15 +370,15 @@ export default function ConfirmModal({
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-lg overflow-hidden rounded-sm bg-white p-0 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] dark:bg-neutral-900 dark:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.6)] [&_button[data-slot='dialog-close']]:top-5.5">
+        <DialogContent className="max-w-xl overflow-hidden rounded-md bg-white p-0 shadow-xl sm:max-w-xl dark:bg-neutral-900 dark:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.6)]">
           <div className="bg-white px-6 pt-4 dark:bg-neutral-900">
             <DialogHeader className="m-0 p-0 pr-2">
-              <DialogTitle className="text-xl text-neutral-900 dark:text-neutral-50">
+              <DialogTitle className="text-xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50">
                 {isPermintaan
                   ? 'Konfirmasi Permintaan Barang'
                   : 'Konfirmasi Peminjaman Barang Inventaris'}
               </DialogTitle>
-              <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
+              <p className="mt-1 text-sm font-medium text-neutral-500 dark:text-neutral-400">
                 {isPermintaan
                   ? 'Silakan isi detail berikut sebelum mengajukan permintaan barang.'
                   : 'Silakan isi detail berikut sebelum melanjutkan proses peminjaman.'}
@@ -380,24 +386,26 @@ export default function ConfirmModal({
             </DialogHeader>
           </div>
 
-          <ScrollArea className="max-h-[55vh] overflow-hidden rounded-t-sm">
-            <div className="mb-0 space-y-4 bg-neutral-50/60 px-6 pt-3 pb-0 text-neutral-900 dark:bg-neutral-900/80 dark:text-neutral-50">
+          <ScrollArea className="max-h-[60vh] overflow-hidden">
+            <div className="space-y-4 px-6 text-neutral-900 dark:text-neutral-50">
               <Form {...form}>
-                <Alert className="rounded-sm border bg-blue-50 p-5 shadow-sm dark:border-blue-800 dark:bg-blue-900/20">
-                  <Info className="!h-5 !w-5 text-blue-900 dark:text-blue-200" />
-                  <AlertTitle className="text-sm font-semibold text-blue-900 dark:text-blue-200">
-                    {isPermintaan
-                      ? 'Informasi permintaan Asset'
-                      : 'Informasi Peminjaman Asset'}
-                  </AlertTitle>
+                <Alert className="rounded-md border-blue-100 bg-blue-50 p-4 shadow-sm dark:border-blue-900/30 dark:bg-blue-900/10">
+                  <Info className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  <div className="ml-3">
+                    <AlertTitle className="text-sm font-semibold text-blue-700 dark:text-blue-300">
+                      {isPermintaan
+                        ? 'Informasi permintaan Asset'
+                        : 'Informasi Peminjaman Asset'}
+                    </AlertTitle>
 
-                  <AlertDescription className="mt-1 text-sm leading-relaxed text-blue-900/80 dark:text-blue-200/80">
-                    {isPermintaan
-                      ? 'Jika Proses Persetujuan Permintaan Asset Tidak Ada Tindakan dari Atasan '
-                      : 'Jika Proses Persetujuan Peminjaman Asset Tidak Ada Tindakan dari Atasan '}
-                    Selama 1×24 Jam, Maka Proses Persetujuan Akan Disetujui oleh
-                    Sistem!
-                  </AlertDescription>
+                    <AlertDescription className="mt-1 text-sm leading-relaxed text-blue-600/90 dark:text-blue-300/80">
+                      {isPermintaan
+                        ? 'Jika Proses Persetujuan Permintaan Asset Tidak Ada Tindakan dari Atasan '
+                        : 'Jika Proses Persetujuan Peminjaman Asset Tidak Ada Tindakan dari Atasan '}
+                      Selama 1×24 Jam, Maka Proses Persetujuan Akan Disetujui
+                      oleh Sistem!
+                    </AlertDescription>
+                  </div>
                 </Alert>
 
                 {!isPermintaan && (
@@ -416,12 +424,12 @@ export default function ConfirmModal({
                           <Button
                             variant="outline"
                             className={cn(
-                              'h-11 w-full cursor-pointer justify-start rounded-sm border border-neutral-200 bg-white text-left font-normal dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-50',
+                              'h-10 w-full cursor-pointer justify-start rounded-md border-neutral-200 bg-white text-left font-normal transition-all hover:bg-neutral-50 hover:text-neutral-900 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-50 dark:hover:bg-neutral-700',
                               (!tanggalPinjam || !waktuPinjam) &&
-                                'text-neutral-400'
+                                'text-neutral-500 dark:text-neutral-400'
                             )}
                           >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            <CalendarIcon className="mr-2 h-4 w-4 text-neutral-500" />
                             {tanggalPinjam && waktuPinjam
                               ? `${format(
                                   tanggalPinjam,
@@ -430,7 +438,10 @@ export default function ConfirmModal({
                               : 'Pilih tanggal dan waktu...'}
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
+                        <PopoverContent
+                          className="w-auto rounded-md p-0 shadow-lg"
+                          align="start"
+                        >
                           <Calendar
                             mode="single"
                             captionLayout="dropdown"
@@ -454,7 +465,7 @@ export default function ConfirmModal({
                               }
                             }}
                           />
-                          <div className="border-t p-3">
+                          <div className="border-t border-neutral-100 p-3 dark:border-neutral-800">
                             <Select
                               value={waktuPinjam}
                               onValueChange={value => {
@@ -474,10 +485,10 @@ export default function ConfirmModal({
                                 }
                               }}
                             >
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select time" />
+                              <SelectTrigger className="w-full rounded-md border-neutral-200 dark:border-neutral-700">
+                                <SelectValue placeholder="Pilih waktu" />
                               </SelectTrigger>
-                              <SelectContent>
+                              <SelectContent className="rounded-md">
                                 {Array.from({ length: 24 }, (_, i) => {
                                   const hour = i.toString().padStart(2, '0');
                                   return [
@@ -501,7 +512,7 @@ export default function ConfirmModal({
                         </PopoverContent>
                       </Popover>
                       {errors.tanggalPinjam && (
-                        <p className="mt-1 text-xs text-red-600">
+                        <p className="animate-in fade-in slide-in-from-top-1 mt-1 text-xs text-red-600">
                           {errors.tanggalPinjam?.message ??
                             String(errors.tanggalPinjam)}
                         </p>
@@ -529,15 +540,15 @@ export default function ConfirmModal({
                             variant="outline"
                             disabled={!tanggalPinjam}
                             className={cn(
-                              'h-11 w-full cursor-pointer justify-start rounded-sm border border-neutral-200 bg-white text-left font-normal dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-50',
+                              'h-10 w-full cursor-pointer justify-start rounded-md border-neutral-200 bg-white px-3 text-left font-normal transition-all hover:bg-neutral-50 hover:text-neutral-900 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-50 dark:hover:bg-neutral-700',
                               (!tanggalKembali ||
                                 !waktuKembali ||
                                 !tanggalPinjam) &&
-                                'text-neutral-400',
+                                'text-neutral-500 dark:text-neutral-400',
                               !tanggalPinjam && 'cursor-not-allowed opacity-50'
                             )}
                           >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            <CalendarIcon className="mr-2 h-4 w-4 text-neutral-500" />
                             {tanggalKembali && waktuKembali
                               ? format(tanggalKembali, 'dd MMMM yyyy') +
                                 ' - ' +
@@ -547,7 +558,10 @@ export default function ConfirmModal({
                                 : 'Pilih tanggal...'}
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
+                        <PopoverContent
+                          className="w-auto rounded-md p-0 shadow-lg"
+                          align="start"
+                        >
                           <Calendar
                             mode="single"
                             captionLayout="dropdown"
@@ -575,7 +589,7 @@ export default function ConfirmModal({
                               return date < tanggalPinjam;
                             }}
                           />
-                          <div className="border-t p-3">
+                          <div className="border-t border-neutral-100 p-3 dark:border-neutral-800">
                             <Select
                               value={waktuKembali}
                               onValueChange={value => {
@@ -595,10 +609,10 @@ export default function ConfirmModal({
                                 }
                               }}
                             >
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select time" />
+                              <SelectTrigger className="w-full rounded-md border-neutral-200 dark:border-neutral-700">
+                                <SelectValue placeholder="Pilih waktu" />
                               </SelectTrigger>
-                              <SelectContent>
+                              <SelectContent className="rounded-md">
                                 {Array.from({ length: 24 }, (_, i) => {
                                   const hour = i.toString().padStart(2, '0');
                                   return [
@@ -622,7 +636,7 @@ export default function ConfirmModal({
                         </PopoverContent>
                       </Popover>
                       {errors.tanggalKembali && (
-                        <p className="mt-1 text-xs text-red-600">
+                        <p className="animate-in fade-in slide-in-from-top-1 mt-1 text-xs text-red-600">
                           {errors.tanggalKembali?.message ??
                             String(errors.tanggalKembali)}
                         </p>
@@ -653,17 +667,21 @@ export default function ConfirmModal({
                           <Button
                             variant="outline"
                             className={cn(
-                              'h-11 w-full cursor-pointer justify-start rounded-sm border border-neutral-200 bg-white text-left font-normal dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-50',
-                              !tanggalPermintaan && 'text-neutral-400'
+                              'h-10 w-full cursor-pointer justify-start rounded-md border-neutral-200 bg-white px-3 text-left font-normal transition-all hover:bg-neutral-50 hover:text-neutral-900 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-50 dark:hover:bg-neutral-700',
+                              !tanggalPermintaan &&
+                                'text-neutral-500 dark:text-neutral-400'
                             )}
                           >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            <CalendarIcon className="mr-2 h-4 w-4 text-neutral-500" />
                             {tanggalPermintaan
                               ? format(tanggalPermintaan, 'PPP')
                               : 'Pilih tanggal...'}
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
+                        <PopoverContent
+                          className="w-auto rounded-md p-0 shadow-lg"
+                          align="start"
+                        >
                           <Calendar
                             mode="single"
                             captionLayout="dropdown"
@@ -683,7 +701,7 @@ export default function ConfirmModal({
                         </PopoverContent>
                       </Popover>
                       {errors.tanggalPermintaan && (
-                        <p className="mt-1 text-xs text-red-600">
+                        <p className="animate-in fade-in slide-in-from-top-1 mt-1 text-xs text-red-600">
                           {errors.tanggalPermintaan?.message ??
                             String(errors.tanggalPermintaan)}
                         </p>
@@ -707,11 +725,11 @@ export default function ConfirmModal({
                           handleChangeLokasi(v);
                         }}
                       >
-                        <SelectTrigger className="h-11 w-full cursor-pointer rounded-sm border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-50">
+                        <SelectTrigger className="h-10 w-full cursor-pointer rounded-md border-neutral-200 bg-white px-3 shadow-sm hover:bg-neutral-50 focus:ring-1 focus:ring-emerald-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-50">
                           <SelectValue placeholder="Pilih lokasi penempatan" />
                         </SelectTrigger>
 
-                        <SelectContent>
+                        <SelectContent className="rounded-md">
                           {lokasiOptions.map(loc => (
                             <SelectItem key={loc.id} value={String(loc.id)}>
                               {loc.lokasi}
@@ -720,7 +738,7 @@ export default function ConfirmModal({
                         </SelectContent>
                       </Select>
                       {errors.lokasi && (
-                        <p className="mt-1 text-xs text-red-600">
+                        <p className="animate-in fade-in slide-in-from-top-1 mt-1 text-xs text-red-600">
                           {errors.lokasi?.message ?? String(errors.lokasi)}
                         </p>
                       )}
@@ -740,12 +758,12 @@ export default function ConfirmModal({
                         type="text"
                         value={unitKerja}
                         readOnly
-                        className="w-full rounded-sm border border-neutral-200 bg-neutral-100 p-3 text-sm shadow-sm dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-50"
+                        className="w-full rounded-md border border-neutral-200 bg-neutral-50 px-3 py-2.5 text-sm text-neutral-500 shadow-sm outline-none dark:border-neutral-700 dark:bg-neutral-800/50 dark:text-neutral-400"
                         placeholder="Unit Kerja otomatis terisi"
                       />
 
                       {errors.unitKerja && (
-                        <p className="mt-1 text-xs text-red-600">
+                        <p className="animate-in fade-in slide-in-from-top-1 mt-1 text-xs text-red-600">
                           {errors.unitKerja?.message ??
                             String(errors.unitKerja)}
                         </p>
@@ -771,7 +789,7 @@ export default function ConfirmModal({
                           {...field}
                           rows={3}
                           placeholder="Tambahkan catatan..."
-                          className="w-full"
+                          className="w-full resize-none rounded-md border-neutral-200 bg-white placeholder:text-neutral-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:placeholder:text-neutral-500"
                         />
                       </FormControl>
                       <FormMessage />
@@ -784,21 +802,23 @@ export default function ConfirmModal({
                     Atasan yang Menyetujui
                   </p>
 
-                  <div className="flex items-center justify-between rounded-sm border bg-white p-4 shadow-sm dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-50 dark:shadow-none">
-                    <div className="flex items-center gap-4">
-                      <Avatar className="h-12 w-12">
+                  <div className="flex items-center justify-between rounded-md border bg-white p-3 shadow-sm dark:border-neutral-700 dark:bg-neutral-800">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-10 w-10">
                         {leaderPic ? (
                           <AvatarImage
                             src={leaderPic}
                             alt={leaderName ?? 'Atasan'}
+                            className="h-full w-full object-cover object-top"
                           />
                         ) : (
                           <AvatarImage
                             src="/images/avatar-pic.jpg"
                             alt={leaderName ?? 'Atasan'}
+                            className="h-full w-full object-cover object-top"
                           />
                         )}
-                        <AvatarFallback>
+                        <AvatarFallback className="bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
                           {(leaderName || '')
                             .split(' ')
                             .map(n => n[0])
@@ -807,22 +827,22 @@ export default function ConfirmModal({
                         </AvatarFallback>
                       </Avatar>
 
-                      <div>
-                        <p className="text-sm font-semibold dark:text-neutral-50">
-                          {leaderName}
-                        </p>
-                        <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
-                          {leaderBadge}
-                        </p>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-50">
+                          {leaderName || '-'}
+                        </span>
+                        <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                          {leaderBadge || '-'}
+                        </span>
                       </div>
                     </div>
 
                     <div className="text-right">
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                        Diproses Maksimal:
+                      <p className="text-[10px] font-medium tracking-wider text-neutral-400 uppercase dark:text-neutral-500">
+                        Proses Maksimal
                       </p>
-                      <p className="text-sm font-semibold dark:text-neutral-50">
-                        24 jam
+                      <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                        24 Jam
                       </p>
                     </div>
                   </div>
@@ -831,14 +851,14 @@ export default function ConfirmModal({
             </div>
           </ScrollArea>
 
-          <div className="flex justify-end bg-white px-3 pt-0 pb-3 dark:border-neutral-700 dark:bg-neutral-900">
+          <div className="sticky bottom-0 z-10 flex justify-end bg-white px-3 pt-0 pb-3 dark:border-neutral-800 dark:bg-neutral-900">
             <Button
-              className="h-9 cursor-pointer rounded-sm bg-[#01793b] px-8 text-sm font-medium text-white shadow-sm hover:bg-[#016c33] dark:bg-[##01793b] dark:text-white dark:hover:bg-[#043014]"
+              className="h-10 cursor-pointer rounded-md bg-[#01793b] px-6 text-sm font-medium text-white shadow-sm transition-all hover:bg-[#016c33] hover:shadow-md active:scale-[0.98] dark:bg-[#01793b] dark:text-white dark:hover:bg-[#043014]"
               onClick={handleSubmit}
               disabled={isSubmitting}
             >
-              <ClipboardCopy className="h-4 w-4" />
-              {isSubmitting ? 'Menyimpan...' : 'Simpan'}
+              <ClipboardCopy className="mr-2 h-4 w-4" />
+              {isSubmitting ? 'Menyimpan...' : 'Simpan Permintaan'}
             </Button>
           </div>
         </DialogContent>

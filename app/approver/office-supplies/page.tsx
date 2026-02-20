@@ -426,7 +426,7 @@ export default function HistoryPage() {
                 placeholder="Filter..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                className="h-8 w-full rounded-lg rounded-sm border border-gray-300 bg-white px-3 py-2 text-sm text-black placeholder-gray-500 hover:bg-gray-50 focus:border-[#01793b] focus:ring-1 focus:ring-[#01793b] focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white dark:placeholder-neutral-400 dark:hover:bg-neutral-700"
+                className="h-8 w-full rounded-md rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-black placeholder-gray-500 hover:bg-gray-50 focus:border-[#01793b] focus:ring-1 focus:ring-[#01793b] focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white dark:placeholder-neutral-400 dark:hover:bg-neutral-700"
               />
             </div>
 
@@ -572,7 +572,7 @@ export default function HistoryPage() {
               </Popover>
             </div>
           </div>
-          <div className="relative hidden overflow-hidden rounded-sm border border-neutral-200 bg-white/50 backdrop-blur md:block dark:border-neutral-800 dark:bg-neutral-900/50">
+          <div className="relative hidden overflow-hidden rounded-md border border-neutral-200 bg-white/50 backdrop-blur md:block dark:border-neutral-800 dark:bg-neutral-900/50">
             {loading ? (
               <div className="p-6">
                 <Table>
@@ -681,7 +681,7 @@ export default function HistoryPage() {
                                     return (
                                       <div
                                         key={String(a.id) + String(i)}
-                                        className="relative h-12 w-12 overflow-hidden rounded-sm border border-neutral-200 bg-white dark:border-neutral-700"
+                                        className="relative h-12 w-12 overflow-hidden rounded-md border border-neutral-200 bg-white dark:border-neutral-700"
                                       >
                                         <Image
                                           src={getValidImageUrl(a.pic)}
@@ -771,6 +771,7 @@ export default function HistoryPage() {
                                 <AvatarImage
                                   src={item.pic ?? '/images/avatar-pic.jpg'}
                                   alt={item.employee ?? 'avatar'}
+                                  className="object-cover object-top w-full h-full"
                                 />
                                 <AvatarFallback className="rounded-full">
                                   {item.employee
@@ -889,7 +890,7 @@ export default function HistoryPage() {
                                     }}
                                     aria-label="View details"
                                     className={cn(
-                                      'flex size-8 cursor-pointer items-center justify-center rounded-sm border shadow-sm transition',
+                                      'flex size-8 cursor-pointer items-center justify-center rounded-md border shadow-sm transition',
                                       'border-gray-300 bg-white text-black hover:bg-gray-100',
                                       'dark:border-neutral-700 dark:bg-black dark:text-white dark:hover:bg-neutral-800'
                                     )}
@@ -917,10 +918,10 @@ export default function HistoryPage() {
             ? Array.from({ length: 3 }).map((_, i) => (
                 <Card
                   key={i}
-                  className="overflow-hidden rounded-sm border border-neutral-200 bg-white/80 p-4 shadow-md backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-900/70"
+                  className="overflow-hidden rounded-md border border-neutral-200 bg-white/80 p-4 shadow-md backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-900/70"
                 >
                   <div className="flex items-start gap-4">
-                    <Skeleton className="h-16 w-16 rounded-sm" />
+                    <Skeleton className="h-16 w-16 rounded-md" />
                     <div className="flex-1">
                       <div className="flex items-start justify-between">
                         <Skeleton className="h-4 w-1/2" />
@@ -936,7 +937,7 @@ export default function HistoryPage() {
             : paginated.map(item => (
                 <Card
                   key={item.id}
-                  className="overflow-hidden rounded-sm border border-neutral-200 bg-white/80 p-4 shadow-md backdrop-blur-sm transition hover:shadow-lg dark:border-neutral-800 dark:bg-neutral-900/70"
+                  className="overflow-hidden rounded-md border border-neutral-200 bg-white/80 p-4 shadow-md backdrop-blur-sm transition hover:shadow-lg dark:border-neutral-800 dark:bg-neutral-900/70"
                 >
                   <div className="flex items-start gap-4">
                     {(() => {
@@ -951,7 +952,7 @@ export default function HistoryPage() {
                             alt={first?.nama ?? item.assetName ?? 'Asset'}
                             width={64}
                             height={64}
-                            className="h-16 w-16 cursor-zoom-in rounded-sm border border-neutral-200 object-cover shadow-sm dark:border-neutral-700"
+                            className="h-16 w-16 cursor-zoom-in rounded-md border border-neutral-200 object-cover shadow-sm dark:border-neutral-700"
                             onClick={() => {
                               setPreviewImage(
                                 getValidImageUrl(first?.pic ?? item.assetImage)
@@ -1099,7 +1100,7 @@ export default function HistoryPage() {
                               }}
                               aria-label="View details"
                               className={cn(
-                                'flex size-8 cursor-pointer items-center justify-center rounded-sm border shadow-sm transition',
+                                'flex size-8 cursor-pointer items-center justify-center rounded-md border shadow-sm transition',
                                 'border-gray-300 bg-white text-black hover:bg-gray-100',
                                 'dark:border-neutral-700 dark:bg-black dark:text-white dark:hover:bg-neutral-800'
                               )}

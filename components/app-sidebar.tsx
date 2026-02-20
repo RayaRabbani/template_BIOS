@@ -297,7 +297,7 @@ export function CustomBIOSSidebar() {
             !open ? 'justify-center' : ''
           )}
         >
-          <div className="rounded-sm bg-neutral-50 p-1 dark:bg-neutral-800">
+          <div className="rounded-md bg-neutral-50 p-1 dark:bg-neutral-800">
             <FolderOpen className="text-neutral-800 dark:text-neutral-200" />
           </div>
 
@@ -445,9 +445,9 @@ function CustomSidebarItem({ href, label, icon, collapsed }: SidebarItemProps) {
       href={href}
       title={collapsed ? label : undefined}
       className={cn(
-        'flex items-center gap-3 rounded-sm px-3 py-2 text-sm transition-colors',
+        'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
         active
-          ? 'bg-[#01793b] font-semibold text-white dark:bg-[#01793b]'
+          ? 'bg-sidebar-primary dark:bg-sidebar-primary font-semibold text-white'
           : 'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sidebar-foreground',
         collapsed && 'justify-center px-2'
       )}
@@ -471,7 +471,7 @@ function CustomSidebarGroup({
   if (collapsed) {
     return (
       <div className="flex items-center justify-center py-2">
-        <div className="text-sidebar-foreground rounded-sm px-3 py-2">
+        <div className="text-sidebar-foreground rounded-md px-3 py-2">
           {icon}
         </div>
       </div>
@@ -481,7 +481,7 @@ function CustomSidebarGroup({
   return (
     <div className="w-full">
       <button
-        className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex h-[40px] w-full cursor-pointer items-center justify-between rounded-sm px-3 py-2"
+        className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex h-[40px] w-full cursor-pointer items-center justify-between rounded-md px-3 py-2"
         onClick={() => setOpen(!open)}
         aria-expanded={open}
       >

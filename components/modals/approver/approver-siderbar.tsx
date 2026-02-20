@@ -52,7 +52,7 @@ export function ApproverSidebar({
             collapsed ? 'justify-center' : ''
           )}
         >
-          <div className="rounded-sm bg-neutral-50 p-1 dark:bg-neutral-800">
+          <div className="rounded-md bg-neutral-50 p-1 dark:bg-neutral-800">
             <BookCheck className="text-neutral-800 dark:text-neutral-200" />
           </div>
 
@@ -136,14 +136,14 @@ export function ApproverSidebar({
               <button
                 aria-label="Profile options"
                 className={cn(
-                  'w-full cursor-pointer rounded-sm px-3 py-2 text-left transition-all hover:bg-gray-50 hover:shadow-sm dark:hover:bg-neutral-800',
+                  'w-full cursor-pointer rounded-md px-3 py-2 text-left transition-all hover:bg-gray-50 hover:shadow-sm dark:hover:bg-neutral-800',
                   collapsed
                     ? 'flex items-center justify-center'
                     : 'flex items-center gap-3'
                 )}
               >
                 <Avatar className="h-9 w-9 overflow-hidden rounded-full">
-                  <AvatarImage src="/images/avatar-pic.jpg" alt="profile" />
+                  <AvatarImage src="/images/avatar-pic.jpg" alt="profile" className="object-cover object-top w-full h-full" />
                   <AvatarFallback className="rounded-full">JA</AvatarFallback>
                 </Avatar>
 
@@ -162,7 +162,7 @@ export function ApproverSidebar({
               side="right"
               align="start"
               sideOffset={8}
-              className="w-48 rounded-sm border border-neutral-200 bg-white p-2 shadow-lg dark:border-neutral-800 dark:bg-neutral-900"
+              className="w-48 rounded-md border border-neutral-200 bg-white p-2 shadow-lg dark:border-neutral-800 dark:bg-neutral-900"
             >
               <NavCard />
             </PopoverContent>
@@ -216,7 +216,7 @@ function SidebarItem({
       href={href}
       title={collapsed ? label : undefined}
       className={cn(
-        'flex items-center gap-3 rounded-sm px-3 py-2 transition-colors',
+        'flex items-center gap-3 rounded-md px-3 py-2 transition-colors',
         active
           ? 'bg-[#01793b] font-semibold text-white dark:bg-[#01793b]'
           : 'text-neutral-700 hover:bg-gray-100 dark:text-neutral-300 dark:hover:bg-neutral-800',

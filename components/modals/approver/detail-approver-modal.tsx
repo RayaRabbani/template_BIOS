@@ -78,7 +78,7 @@ export default function DetailApproverModal({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent
-        className={`w-full max-w-xl rounded-sm border border-neutral-200 bg-white p-0 shadow-[0_12px_45px_-10px_rgba(0,0,0,0.25)] dark:border-neutral-800 dark:bg-neutral-900 [&_button[data-slot='dialog-close']]:top-5 ${
+        className={`w-full max-w-xl rounded-md border border-neutral-200 bg-white p-0 shadow-[0_12px_45px_-10px_rgba(0,0,0,0.25)] dark:border-neutral-800 dark:bg-neutral-900 ${
           inferredType === 'peminjaman'
             ? 'max-h-[80vh] overflow-y-auto sm:max-h-none sm:overflow-visible'
             : ''
@@ -260,8 +260,8 @@ export default function DetailApproverModal({
           <ScrollArea
             className={
               renderItems.length > 2
-                ? 'h-48 max-h-48 overflow-hidden rounded-sm'
-                : 'overflow-hidden rounded-sm'
+                ? 'h-48 max-h-48 overflow-hidden rounded-md'
+                : 'overflow-hidden rounded-md'
             }
           >
             <div className="space-y-3">
@@ -280,14 +280,14 @@ export default function DetailApproverModal({
                 return (
                   <div
                     key={it.id}
-                    className="flex w-full items-center gap-3 rounded-sm border border-neutral-200 bg-neutral-50 p-3 transition-colors hover:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-800/40 dark:hover:bg-neutral-800/60"
+                    className="flex w-full items-center gap-3 rounded-md border border-neutral-200 bg-neutral-50 p-3 transition-colors hover:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-800/40 dark:hover:bg-neutral-800/60"
                   >
                     <Image
                       src={img}
                       alt={it?.nama ?? 'asset'}
                       width={60}
                       height={60}
-                      className="h-14 w-14 flex-shrink-0 cursor-zoom-in rounded-sm border border-neutral-300 object-cover dark:border-neutral-700"
+                      className="h-14 w-14 flex-shrink-0 cursor-zoom-in rounded-md border border-neutral-300 object-cover dark:border-neutral-700"
                       onClick={() => {
                         setPreviewImage(img);
                         setOpenPreview(true);
@@ -411,7 +411,7 @@ function TimelineItem({
       {approver && (
         <div className="mt-2 ml-1 flex items-center gap-3">
           <Avatar className="h-11 w-11 overflow-hidden rounded-full">
-            <AvatarImage src={approver.avatar} alt={approver.name} />
+            <AvatarImage src={approver.avatar} alt={approver.name} className="object-cover object-top w-full h-full" />
             <AvatarFallback className="rounded-full">
               {approver.name
                 .split(' ')

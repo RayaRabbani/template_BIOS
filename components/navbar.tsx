@@ -171,7 +171,7 @@ export default function Navbar({
                     placeholder="Search..."
                     value={search || ''}
                     onChange={e => onSearchChange?.(e.target.value)}
-                    className="h-10 w-48 rounded-sm border border-gray-300 bg-white py-1 pr-3 pl-10 text-sm text-black placeholder-black placeholder:font-semibold focus:border-transparent focus:ring-2 focus:ring-[#01793b] focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white dark:placeholder-white"
+                    className="h-10 w-48 rounded-md border border-gray-300 bg-white py-1 pr-3 pl-10 text-sm text-black placeholder-black placeholder:font-semibold focus:border-transparent focus:ring-2 focus:ring-[#01793b] focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white dark:placeholder-white"
                   />
                 </div>
               </div>
@@ -191,7 +191,7 @@ export default function Navbar({
             {showCart && (
               <Button
                 className={cn(
-                  'relative cursor-pointer rounded-sm p-1 text-sm shadow-sm transition sm:p-2 sm:text-base',
+                  'relative flex h-10 cursor-pointer items-center rounded-md px-3 text-sm shadow-sm transition',
                   'bg-[#01793b] text-white hover:bg-[#016c33]',
                   'dark:bg-[#01793b] dark:text-white dark:hover:bg-[#043014]'
                 )}
@@ -250,7 +250,7 @@ export default function Navbar({
                           : undefined;
 
                     return (
-                      <div className="flex h-8 items-center rounded-sm border border-gray-200 bg-white text-sm text-gray-700 shadow-sm dark:border-neutral-700 dark:bg-neutral-900 dark:text-gray-300">
+                      <div className="flex h-8 items-center rounded-md border border-gray-200 bg-white text-sm text-gray-700 shadow-sm dark:border-neutral-700 dark:bg-neutral-900 dark:text-gray-300">
                         {href ? (
                           <Button
                             variant="ghost"
@@ -269,7 +269,7 @@ export default function Navbar({
                   })()}
 
                   <ChevronRight size={16} className="text-gray-800" />
-                  <div className="flex h-8 items-center rounded-sm border border-gray-200 bg-white text-sm text-gray-700 shadow-sm dark:border-neutral-700 dark:bg-neutral-900 dark:text-gray-300">
+                  <div className="flex h-8 items-center rounded-md border border-gray-200 bg-white text-sm text-gray-700 shadow-sm dark:border-neutral-700 dark:bg-neutral-900 dark:text-gray-300">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -283,7 +283,7 @@ export default function Navbar({
               ) : (
                 <>
                   <ChevronRight size={16} className="text-gray-800" />
-                  <div className="flex h-8 items-center rounded-sm border border-gray-200 bg-white text-sm text-gray-700 shadow-sm dark:border-neutral-700 dark:bg-neutral-900 dark:text-gray-300">
+                  <div className="flex h-8 items-center rounded-md border border-gray-200 bg-white text-sm text-gray-700 shadow-sm dark:border-neutral-700 dark:bg-neutral-900 dark:text-gray-300">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -307,7 +307,7 @@ export default function Navbar({
             placeholder="Search..."
             value={search || ''}
             onChange={e => onSearchChange?.(e.target.value)}
-            className="h-10 w-full rounded-sm py-1 placeholder:font-bold"
+            className="h-10 w-full rounded-md py-1 placeholder:font-bold"
           />
         </div>
       )}

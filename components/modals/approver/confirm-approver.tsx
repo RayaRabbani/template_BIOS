@@ -34,7 +34,7 @@ export default function ConfirmApprover({
     type === 'peminjaman' && (action === 'approve' || action === 'reject');
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[85vh] max-w-lg flex-col overflow-hidden rounded-sm bg-white dark:bg-neutral-900 [&_button[data-slot='dialog-close']]:top-5">
+      <DialogContent className="flex max-h-[85vh] max-w-lg flex-col overflow-hidden rounded-md bg-white dark:bg-neutral-900">
         <DialogTitle className="-mt-1 mb-2">
           {action === 'approve'
             ? 'Konfirmasi Approve'
@@ -54,7 +54,7 @@ export default function ConfirmApprover({
 
           return (
             <div className="flex flex-1 flex-col gap-4 overflow-hidden">
-              <div className="rounded-sm border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-900/40">
+              <div className="rounded-md border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-900/40">
                 <div className="grid grid-cols-2 gap-y-2 text-sm">
                   <div className="text-neutral-500">No Transaksi</div>
                   <div className="font-semibold">
@@ -97,7 +97,7 @@ export default function ConfirmApprover({
                     (!target.item?.length && target.assetName)
                       ? 'h-[200px] max-h-[200px]'
                       : 'h-[100px] max-h-[100px]'
-                  } overflow-hidden rounded-sm`}
+                  } overflow-hidden rounded-md`}
                 >
                   <div className="mt-1 mb-1 space-y-3">
                     {Array.isArray(target.item) && target.item.length > 0 ? (
@@ -105,10 +105,10 @@ export default function ConfirmApprover({
                       target.item.map((asset, index) => (
                         <div
                           key={asset.id ?? index}
-                          className="flex items-center gap-3 rounded-sm border border-neutral-200 bg-neutral-50 p-3 dark:border-neutral-800 dark:bg-neutral-800/40"
+                          className="flex items-center gap-3 rounded-md border border-neutral-200 bg-neutral-50 p-3 dark:border-neutral-800 dark:bg-neutral-800/40"
                         >
-                          <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-sm border">
-                            <Avatar className="h-14 w-14 rounded-sm">
+                          <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-md border">
+                            <Avatar className="h-14 w-14 rounded-md">
                               <AvatarImage
                                 src={
                                   resolveAssetImage(
@@ -118,10 +118,10 @@ export default function ConfirmApprover({
                                       : 'asset'
                                   ) ?? '/placeholder.png'
                                 }
-                                alt={asset.nama || 'Asset'}
-                                className="object-cover"
+                                alt={asset.nama || '-'}
+                                className="object-cover object-top w-full h-full"
                               />
-                              <AvatarFallback className="rounded-sm bg-neutral-100 dark:bg-neutral-800">
+                              <AvatarFallback className="rounded-md bg-neutral-100 dark:bg-neutral-800">
                                 {asset.nama?.substring(0, 2).toUpperCase() ||
                                   'AS'}
                               </AvatarFallback>
@@ -140,9 +140,9 @@ export default function ConfirmApprover({
                       ))
                     ) : target.assetName ? (
                       // Fallback: display single asset from individual properties
-                      <div className="flex items-center gap-3 rounded-sm border border-neutral-200 bg-neutral-50 p-3 dark:border-neutral-800 dark:bg-neutral-800/40">
-                        <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-sm border">
-                          <Avatar className="h-14 w-14 rounded-sm">
+                      <div className="flex items-center gap-3 rounded-md border border-neutral-200 bg-neutral-50 p-3 dark:border-neutral-800 dark:bg-neutral-800/40">
+                        <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-md border">
+                          <Avatar className="h-14 w-14 rounded-md">
                             <AvatarImage
                               src={
                                 resolveAssetImage(
@@ -156,10 +156,10 @@ export default function ConfirmApprover({
                                     : 'asset'
                                 ) ?? '/placeholder.png'
                               }
-                              alt={target.assetName || 'Asset'}
-                              className="object-cover"
+                              alt={target.assetName || '-'}
+                              className="object-cover object-top w-full h-full"
                             />
-                            <AvatarFallback className="rounded-sm bg-neutral-100 dark:bg-neutral-800">
+                            <AvatarFallback className="rounded-md bg-neutral-100 dark:bg-neutral-800">
                               {target.assetName
                                 ?.substring(0, 2)
                                 .toUpperCase() || 'AS'}

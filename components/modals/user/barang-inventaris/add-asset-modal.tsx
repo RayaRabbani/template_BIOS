@@ -278,16 +278,16 @@ export function AddAssetModal({
   return (
     <>
       <Dialog open={open} onOpenChange={onClose}>
-        <DialogContent className="my-4 w-[90%] overflow-hidden rounded-sm border border-neutral-200 bg-white p-0 shadow-xl sm:my-2 sm:max-w-md md:max-w-lg dark:border-neutral-700 dark:bg-neutral-900 [&_button[data-slot='dialog-close']]:top-5">
-          <div className="sticky top-0 border-neutral-200 bg-white px-6 pt-4 dark:border-neutral-700 dark:bg-neutral-900">
+        <DialogContent className="my-4 w-[90%] overflow-hidden rounded-md border border-neutral-200 bg-white p-0 shadow-xl sm:my-2 sm:max-w-md md:max-w-lg dark:border-neutral-700 dark:bg-neutral-900">
+          <div className="sticky top-0 border-neutral-100 bg-white px-6 pt-4 dark:border-neutral-800 dark:bg-neutral-900">
             <DialogHeader>
-              <DialogTitle className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+              <DialogTitle className="text-lg font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
                 Tambahkan Barang Inventaris
               </DialogTitle>
-              <p className="text-sm text-neutral-700 dark:text-neutral-400">
+              <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
                 {isPermintaan
-                  ? 'Berikut detail barang inventaris yang anda akan minta'
-                  : 'Berikut detail barang inventaris yang anda akan pinjam'}
+                  ? 'Berikut detail barang inventaris yang akan anda minta'
+                  : 'Berikut detail barang inventaris yang akan anda pinjam'}
               </p>
             </DialogHeader>
           </div>
@@ -295,19 +295,11 @@ export function AddAssetModal({
           <ScrollArea className="max-h-[55vh]">
             <div className="space-y-4 px-6 py-0">
               {noData ? (
-                <div className="flex w-full flex-col items-center justify-center py-4">
-                  <div className="mb-2 flex h-16 w-16 items-center justify-center">
-                    <Inbox
-                      size={48}
-                      className="mx-auto text-neutral-400 dark:text-neutral-500"
-                    />
+                <div className="flex flex-col items-center justify-center py-8 text-center text-neutral-500 sm:py-12">
+                  <div className="mb-3 rounded-full bg-neutral-100 p-3 dark:bg-neutral-800">
+                    <Inbox size={35} className="opacity-40" />
                   </div>
-                  <h3 className="mb-1 text-lg font-semibold text-neutral-800 dark:text-neutral-100">
-                    Tidak ada data
-                  </h3>
-                  <p className="mt-1 text-center text-sm text-neutral-600 dark:text-neutral-400">
-                    Tidak ada barang inventaris tersedia.
-                  </p>
+                  <p className="text-sm">Belum ada barang inventaris yang tersedia</p>
                 </div>
               ) : (
                 <>
@@ -352,13 +344,13 @@ export function AddAssetModal({
                                   typeof s.available === 'number' &&
                                   s.available === 0
                                 }
-                                className={`mx-auto flex w-full max-w-[454px] flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white text-left shadow-sm transition-colors duration-150 hover:shadow-md focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-neutral-700 dark:bg-neutral-900 ${
+                                className={`mx-auto flex w-full max-w-[454px] flex-col overflow-hidden rounded-md border border-neutral-200 bg-white text-left transition-all hover:border-emerald-200 hover:shadow-md focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-emerald-900 ${
                                   active
-                                    ? 'ring-2 ring-black ring-offset-4 ring-offset-white dark:ring-offset-neutral-900'
-                                    : ''
+                                    ? 'ring-2 ring-emerald-600 ring-offset-2 ring-offset-white dark:ring-offset-neutral-900'
+                                    : 'shadow-sm'
                                 }`}
                               >
-                                <div className="relative h-64 w-full bg-neutral-100 dark:bg-neutral-800">
+                                <div className="relative h-54 w-full bg-neutral-100 dark:bg-neutral-800">
                                   {s.image ? (
                                     <Image
                                       src={s.image!}
@@ -474,19 +466,19 @@ export function AddAssetModal({
                                     typeof s.available === 'number' &&
                                     s.available === 0
                                   }
-                                  className={`relative mt-0 w-full overflow-hidden rounded-lg border border-neutral-200 bg-white text-left shadow-sm transition-colors duration-150 hover:shadow-md focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-neutral-700 dark:bg-neutral-900 ${
+                                  className={`group relative mt-0 flex w-full flex-col overflow-hidden rounded-md border border-neutral-200 bg-white text-left shadow-sm transition-all duration-300 hover:border-emerald-200 hover:shadow-md focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-emerald-900 ${
                                     active
-                                      ? 'ring-2 ring-black ring-offset-4 ring-offset-white dark:ring-offset-neutral-900'
+                                      ? 'ring-2 ring-emerald-600 ring-offset-2 ring-offset-white dark:ring-offset-neutral-900'
                                       : ''
                                   }`}
                                 >
-                                  <div className="relative h-44 w-full bg-neutral-100 dark:bg-neutral-800">
+                                  <div className="relative aspect-[4/3] w-full bg-neutral-100 dark:bg-neutral-800">
                                     {s.image ? (
                                       <Image
                                         src={s.image!}
                                         alt={s.name || ''}
                                         fill
-                                        className="object-cover"
+                                        className="object-cover transition-transform duration-500 group-hover:scale-105"
                                       />
                                     ) : (
                                       <div className="flex h-full w-full items-center justify-center text-neutral-400">
@@ -728,13 +720,13 @@ export function AddAssetModal({
           </ScrollArea>
 
           {!noData && (
-            <div className="sticky bottom-0 z-10 border-neutral-200 bg-white px-6 pt-4 pb-4 dark:border-neutral-700 dark:bg-neutral-900">
+            <div className="sticky bottom-0 z-10 border-neutral-100 bg-white px-6 pt-4 pb-5 dark:border-neutral-800 dark:bg-neutral-900">
               <Button
-                className="w-full cursor-pointer rounded-sm bg-[#01793b] bg-black text-white transition-colors hover:bg-[#016c33] dark:bg-[##01793b] dark:text-white dark:hover:bg-[#043014]"
+                className="w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-[#01793b] font-medium text-white shadow-sm transition-all hover:bg-[#016c33] hover:shadow-md dark:bg-[#01793b] dark:text-white dark:hover:bg-[#043014]"
                 onClick={() => handleSubmit()}
                 disabled={submitting}
               >
-                <CirclePlus />
+                <CirclePlus className="h-4 w-4" />
                 Tambahkan
               </Button>
             </div>
@@ -751,7 +743,7 @@ export function AddAssetModal({
       >
         <DialogContent
           showCloseButton={false}
-          className="max-w-4xl overflow-hidden rounded-sm border-none bg-transparent p-0"
+          className="max-w-4xl overflow-hidden rounded-md border-none bg-transparent p-0"
         >
           <VisuallyHidden>
             <DialogTitle>Preview Image</DialogTitle>

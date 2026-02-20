@@ -213,20 +213,20 @@ export default function PendingApprovalModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full max-w-xl overflow-hidden rounded-sm border border-neutral-200 bg-white p-0 shadow-[0_12px_45px_-10px_rgba(0,0,0,0.2)] dark:border-neutral-800 dark:bg-neutral-900 [&_button[data-slot='dialog-close']]:top-5">
+      <DialogContent className="w-full max-w-xl overflow-hidden rounded-md border border-neutral-200 bg-white p-0 shadow-[0_12px_45px_-10px_rgba(0,0,0,0.2)] dark:border-neutral-800 dark:bg-neutral-900">
         <div className="p-6">
           <DialogHeader className="-mt-2 mb-4">
             <DialogTitle className="text-lg">Menunggu Persetujuan</DialogTitle>
           </DialogHeader>
 
-          <div className="mb-2 flex rounded-sm bg-neutral-100 dark:bg-neutral-800">
+          <div className="mb-2 flex rounded-md bg-neutral-100 dark:bg-neutral-800">
             {['peminjaman', 'permintaan']
               .filter(t => !showOnly || showOnly === t)
               .map(t => (
                 <Button
                   key={t}
                   variant="ghost"
-                  className={`relative flex-1 cursor-pointer rounded-sm py-2 text-sm font-medium transition ${
+                  className={`relative flex-1 cursor-pointer rounded-md py-2 text-sm font-medium transition ${
                     tab === t
                       ? 'bg-[#01793b] text-white shadow hover:bg-[#016c33] hover:text-white dark:bg-[#052E16] dark:text-white dark:hover:bg-[#043014]'
                       : 'text-neutral-600 hover:bg-transparent hover:text-neutral-600 dark:text-neutral-300 dark:hover:bg-transparent dark:hover:text-neutral-300'
@@ -274,15 +274,15 @@ export default function PendingApprovalModal({
                       {Array.from({ length: 3 }).map((_, i) => (
                         <div
                           key={i}
-                          className="flex items-center justify-between rounded-sm border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-700 dark:bg-neutral-800"
+                          className="flex items-center justify-between rounded-md border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-700 dark:bg-neutral-800"
                         >
                           <div className="flex-1">
                             <Skeleton className="mb-2 h-4 w-32" />
                             <Skeleton className="h-5 w-16 rounded-full" />
                           </div>
                           <div className="flex gap-2">
-                            <Skeleton className="h-8 w-8 rounded-sm" />
-                            <Skeleton className="h-8 w-8 rounded-sm" />
+                            <Skeleton className="h-8 w-8 rounded-md" />
+                            <Skeleton className="h-8 w-8 rounded-md" />
                           </div>
                         </div>
                       ))}
@@ -306,7 +306,7 @@ export default function PendingApprovalModal({
                       currentList.map(item => (
                         <div
                           key={item.id}
-                          className="flex items-center justify-between rounded-sm border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-700 dark:bg-neutral-800"
+                          className="flex items-center justify-between rounded-md border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-700 dark:bg-neutral-800"
                         >
                           <div>
                             <p className="text-sm font-medium">
@@ -344,7 +344,7 @@ export default function PendingApprovalModal({
                               <Button
                                 size="sm"
                                 className={cn(
-                                  'flex size-8 cursor-pointer items-center justify-center rounded-sm shadow-sm transition',
+                                  'flex size-8 cursor-pointer items-center justify-center rounded-md shadow-sm transition',
                                   'bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-800/30'
                                 )}
                                 onClick={() => handleCancel(item.id, tab)}
@@ -358,7 +358,7 @@ export default function PendingApprovalModal({
                             <Button
                               size="sm"
                               className={cn(
-                                'flex size-8 cursor-pointer items-center justify-center rounded-sm border shadow-sm transition',
+                                'flex size-8 cursor-pointer items-center justify-center rounded-md border shadow-sm transition',
                                 'border-gray-300 bg-white text-black hover:bg-gray-100',
                                 'dark:border-neutral-700 dark:bg-black dark:text-white dark:hover:bg-neutral-800'
                               )}
@@ -423,7 +423,7 @@ export default function PendingApprovalModal({
         </div>
 
         <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
-          <AlertDialogContent className="rounded-sm">
+          <AlertDialogContent className="rounded-md">
             <AlertDialogHeader>
               <AlertDialogTitle>Konfirmasi Pembatalan</AlertDialogTitle>
               <p className="mt-2 text-sm text-neutral-600">
@@ -432,7 +432,7 @@ export default function PendingApprovalModal({
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel
-                className="cursor-pointer rounded-sm"
+                className="cursor-pointer rounded-md"
                 onClick={() => {
                   setCancelDialogOpen(false);
                   setPendingCancelTarget(null);
@@ -441,7 +441,7 @@ export default function PendingApprovalModal({
                 Batal
               </AlertDialogCancel>
               <AlertDialogAction
-                className="cursor-pointer rounded-sm"
+                className="cursor-pointer rounded-md"
                 onClick={() => {
                   if (pendingCancelTarget) {
                     performCancelConfirmed(pendingCancelTarget.id);

@@ -56,7 +56,7 @@ export default function DetailApprovalModal({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent
-        className={`max-h-[80vh] w-full max-w-xl overflow-y-auto rounded-sm border border-neutral-200 bg-white p-0 shadow-[0_12px_45px_-10px_rgba(0,0,0,0.25)] sm:max-h-none sm:overflow-visible dark:border-neutral-800 dark:bg-neutral-900 [&_button[data-slot='dialog-close']]:top-3`}
+        className={`max-h-[80vh] w-full max-w-xl overflow-y-auto rounded-md border border-neutral-200 bg-white p-0 shadow-[0_12px_45px_-10px_rgba(0,0,0,0.25)] sm:max-h-none sm:overflow-visible dark:border-neutral-800 dark:bg-neutral-900`}
       >
         <div className="p-6">
           <DialogHeader className="-mt-3">
@@ -248,8 +248,8 @@ export default function DetailApprovalModal({
             <ScrollArea
               className={
                 (data.item?.length ?? 0) > 3
-                  ? 'h-52 max-h-52 overflow-hidden rounded-sm'
-                  : 'overflow-hidden rounded-sm'
+                  ? 'h-52 max-h-52 overflow-hidden rounded-md'
+                  : 'overflow-hidden rounded-md'
               }
             >
               <div className="space-y-3">
@@ -264,14 +264,14 @@ export default function DetailApprovalModal({
                   return (
                     <div
                       key={it.id}
-                      className="flex w-full items-center gap-4 rounded-sm border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-800/40"
+                      className="flex w-full items-center gap-4 rounded-md border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-800/40"
                     >
                       <Image
                         src={img}
                         alt={it?.nama ?? 'asset'}
                         width={70}
                         height={70}
-                        className="h-16 w-16 cursor-zoom-in rounded-sm border border-neutral-300 object-cover dark:border-neutral-700"
+                        className="h-16 w-16 cursor-zoom-in rounded-md border border-neutral-300 object-cover dark:border-neutral-700"
                         onClick={() => {
                           setPreviewImage(img);
                           setOpenPreview(true);
@@ -300,13 +300,13 @@ export default function DetailApprovalModal({
               </div>
             </ScrollArea>
           ) : (
-            <div className="flex w-full items-center gap-4 rounded-sm border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-800/40">
+            <div className="flex w-full items-center gap-4 rounded-md border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-800/40">
               <Image
                 src={safeImage}
                 alt="asset"
                 width={70}
                 height={70}
-                className="h-16 w-16 cursor-zoom-in rounded-sm border border-neutral-300 object-cover dark:border-neutral-700"
+                className="h-16 w-16 cursor-zoom-in rounded-md border border-neutral-300 object-cover dark:border-neutral-700"
                 onClick={() => {
                   setPreviewImage(safeImage);
                   setOpenPreview(true);
@@ -431,6 +431,7 @@ function TimelineItem({
               <AvatarImage
                 src={approver.avatar}
                 alt={approver.name ?? 'approver'}
+                className="object-cover object-top w-full h-full"
               />
             ) : (
               <AvatarFallback>
@@ -484,7 +485,7 @@ function StatusSummaryCard({ data }: { data: DetailApprovalData }) {
             : 'text-yellow-600';
 
   return (
-    <div className="rounded-sm border border-neutral-200 bg-white/70 p-4 backdrop-blur dark:border-neutral-800 dark:bg-neutral-900/60">
+    <div className="rounded-md border border-neutral-200 bg-white/70 p-4 backdrop-blur dark:border-neutral-800 dark:bg-neutral-900/60 ml-4">
       <p className="text-xs text-neutral-500 dark:text-neutral-400">
         Status Saat Ini
       </p>

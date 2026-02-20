@@ -74,11 +74,11 @@ export default function ApproverBell({ data, showOnly, onSelectItem }: Props) {
           </div>
 
           {!showOnly && (
-            <div className="mb-3 flex rounded-sm bg-neutral-100 p-1 dark:bg-neutral-800">
+            <div className="mb-3 flex rounded-md bg-neutral-100 p-1 dark:bg-neutral-800">
               {(['peminjaman', 'permintaan'] as const).map(t => (
                 <button
                   key={t}
-                  className={`flex-1 rounded-sm py-1 text-sm font-medium transition ${
+                  className={`flex-1 rounded-md py-1 text-sm font-medium transition ${
                     tab === t ? 'bg-black text-white' : 'text-neutral-600'
                   }`}
                   onClick={() => setTab(t)}
@@ -99,7 +99,7 @@ export default function ApproverBell({ data, showOnly, onSelectItem }: Props) {
                 {itemsToShow.map(item => (
                   <div
                     key={item.id}
-                    className="flex items-center justify-between rounded-sm border border-neutral-100 bg-white p-3 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
+                    className="flex items-center justify-between rounded-md border border-neutral-100 bg-white p-3 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
                   >
                     <div>
                       <div className="text-sm font-medium">
@@ -133,7 +133,7 @@ export default function ApproverBell({ data, showOnly, onSelectItem }: Props) {
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="flex size-8 cursor-pointer items-center justify-center rounded-sm border border-gray-300 bg-white text-black shadow-sm transition hover:bg-gray-100 dark:border-neutral-700 dark:bg-black dark:text-white dark:hover:bg-neutral-800"
+                        className="flex size-8 cursor-pointer items-center justify-center rounded-md border border-gray-300 bg-white text-black shadow-sm transition hover:bg-gray-100 dark:border-neutral-700 dark:bg-black dark:text-white dark:hover:bg-neutral-800"
                         onClick={() => {
                           onSelectItem?.(item);
                           setOpen(false);
@@ -151,7 +151,7 @@ export default function ApproverBell({ data, showOnly, onSelectItem }: Props) {
               {itemsToShow.map(item => (
                 <div
                   key={item.id}
-                  className="flex items-center justify-between rounded-sm border border-neutral-100 bg-white p-3 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
+                  className="flex items-center justify-between rounded-md border border-neutral-100 bg-white p-3 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
                 >
                   <div>
                     <div className="text-sm font-medium">
@@ -185,7 +185,7 @@ export default function ApproverBell({ data, showOnly, onSelectItem }: Props) {
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="flex size-8 cursor-pointer items-center justify-center rounded-sm border border-gray-300 bg-white text-black shadow-sm transition hover:bg-gray-100 dark:border-neutral-700 dark:bg-black dark:text-white dark:hover:bg-neutral-800"
+                      className="flex size-8 cursor-pointer items-center justify-center rounded-md border border-gray-300 bg-white text-black shadow-sm transition hover:bg-gray-100 dark:border-neutral-700 dark:bg-black dark:text-white dark:hover:bg-neutral-800"
                       onClick={() => {
                         onSelectItem?.(item);
                         setOpen(false);

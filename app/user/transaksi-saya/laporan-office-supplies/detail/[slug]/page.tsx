@@ -299,14 +299,14 @@ export default function DetailPage() {
 
         <div className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-3">
           <div className="col-span-2 space-y-4">
-            <div className="rounded-sm border border-neutral-200 p-4 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
+            <div className="rounded-md border border-neutral-200 p-4 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
               <Skeleton className="mb-4 h-6 w-56" />
               <div className="mt-6 flex justify-center">
                 <Skeleton className="h-56 w-56 rounded" />
               </div>
             </div>
 
-            <div className="space-y-4 rounded-sm border border-neutral-200 p-4 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
+            <div className="space-y-4 rounded-md border border-neutral-200 p-4 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
               <div>
                 <Skeleton className="mb-2 h-5 w-48" />
                 <Skeleton className="h-3 w-64" />
@@ -322,11 +322,11 @@ export default function DetailPage() {
           </div>
 
           <div className="space-y-4">
-            <div className="rounded-sm border border-neutral-200 p-4 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
+            <div className="rounded-md border border-neutral-200 p-4 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
               <Skeleton className="h-40 w-full" />
             </div>
 
-            <div className="space-y-2 rounded-sm border border-neutral-200 p-4 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
+            <div className="space-y-2 rounded-md border border-neutral-200 p-4 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
               {Array.from({ length: 4 }).map((_, i) => (
                 <Skeleton key={i} className="h-3 w-full" />
               ))}
@@ -358,21 +358,21 @@ export default function DetailPage() {
       />
       <div className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-3">
         <div className="col-span-2 space-y-4">
-          <Card className="rounded-sm border border-neutral-200 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
+          <Card className="rounded-md border border-neutral-200 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
             <CardContent className="">
               <CardTitle className="text-m dark:text-white">
                 Scan QR untuk melihat detail transaksi
               </CardTitle>
 
               <div className="mt-6 flex justify-center">
-                <div className="rounded-sm border bg-white/70 p-6 shadow backdrop-blur dark:border-neutral-700 dark:bg-neutral-800">
+                <div className="rounded-md border bg-white/70 p-6 shadow backdrop-blur dark:border-neutral-700 dark:bg-neutral-800">
                   <QRCodeCanvas value={transaction.slug} size={230} />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="rounded-sm border border-neutral-200 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
+          <Card className="rounded-md border border-neutral-200 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
             <CardHeader>
               <CardTitle className="text-m dark:text-white">
                 Informasi Transaksi
@@ -418,6 +418,7 @@ export default function DetailPage() {
                       <AvatarImage
                         src={transaction.employeePic ?? undefined}
                         alt={transaction.employee}
+                        className="object-cover object-top w-full h-full"
                       />
                     ) : (
                       <AvatarFallback>
@@ -504,7 +505,7 @@ export default function DetailPage() {
                           <Icon size={22} color="white" />
                         </div>
 
-                        <div className="ml-14 rounded-sm border-2 border-white/50 bg-white/20 p-4 shadow-sm backdrop-blur-lg dark:border-neutral-600/60 dark:bg-neutral-900/20">
+                        <div className="ml-14 rounded-md border-2 border-white/50 bg-white/20 p-4 shadow-sm backdrop-blur-lg dark:border-neutral-600/60 dark:bg-neutral-900/20">
                           <p className="font-semibold text-neutral-900 dark:text-neutral-100">
                             {(() => {
                               const key = (s.status || '')
@@ -550,7 +551,7 @@ export default function DetailPage() {
                           <HourglassIcon className="h-6 w-6 animate-spin text-white" />
                         </div>
 
-                        <div className="ml-14 rounded-sm border-2 border-white/50 bg-white/20 p-4 shadow-sm backdrop-blur-lg dark:border-neutral-600/60 dark:bg-neutral-900/20">
+                        <div className="ml-14 rounded-md border-2 border-white/50 bg-white/20 p-4 shadow-sm backdrop-blur-lg dark:border-neutral-600/60 dark:bg-neutral-900/20">
                           <p className="font-semibold text-neutral-900 dark:text-neutral-100">
                             Menunggu Konfirmasi Kompilator
                           </p>
@@ -583,7 +584,7 @@ export default function DetailPage() {
                 {penyerahanData && (
                   <div className="mt-6">
                     <Button
-                      className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-sm bg-blue-600 text-white hover:bg-blue-700"
+                      className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-blue-600 text-white hover:bg-blue-700"
                       onClick={() => {
                         if (
                           penyerahanData &&
@@ -625,7 +626,7 @@ export default function DetailPage() {
         </div>
 
         <div className="col-span-2 lg:col-span-1">
-          <Card className="sticky top-2 rounded-sm border border-neutral-200 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
+          <Card className="sticky top-2 rounded-md border border-neutral-200 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
             <CardHeader>
               <CardTitle className="text-m dark:text-white">
                 {penyerahanData
@@ -674,14 +675,14 @@ export default function DetailPage() {
                               return (
                                 <div
                                   key={i}
-                                  className="flex items-center gap-4 rounded-sm border border-neutral-200 p-3 shadow-sm dark:border-neutral-700"
+                                  className="flex items-center gap-4 rounded-md border border-neutral-200 p-3 shadow-sm dark:border-neutral-700"
                                 >
                                   <Image
                                     src={imageUrl}
                                     width={70}
                                     height={70}
                                     alt={(item.nama as string) ?? 'asset'}
-                                    className="cursor-zoom-in rounded-sm object-cover transition hover:opacity-80"
+                                    className="cursor-zoom-in rounded-md object-cover transition hover:opacity-80"
                                     onClick={() => setPreviewImage(imageUrl)}
                                   />
                                   <div>
@@ -730,14 +731,14 @@ export default function DetailPage() {
                             return (
                               <div
                                 key={i}
-                                className="flex items-center gap-4 rounded-sm border border-neutral-200 p-3 shadow-sm dark:border-neutral-700"
+                                className="flex items-center gap-4 rounded-md border border-neutral-200 p-3 shadow-sm dark:border-neutral-700"
                               >
                                 <Image
                                   src={imageUrl}
                                   width={70}
                                   height={70}
                                   alt={(item.nama as string) ?? 'asset'}
-                                  className="cursor-zoom-in rounded-sm object-cover transition hover:opacity-80"
+                                  className="cursor-zoom-in rounded-md object-cover transition hover:opacity-80"
                                   onClick={() => setPreviewImage(imageUrl)}
                                 />
                                 <div className="min-w-0 flex-1">
@@ -783,14 +784,14 @@ export default function DetailPage() {
                         {transaction.items.map((item, i) => (
                           <div
                             key={i}
-                            className="flex items-center gap-4 rounded-sm border border-neutral-200 p-3 shadow-sm dark:border-neutral-700"
+                            className="flex items-center gap-4 rounded-md border border-neutral-200 p-3 shadow-sm dark:border-neutral-700"
                           >
                             <Image
                               src={item.image ?? assetImage ?? ''}
                               width={70}
                               height={70}
                               alt={item.name ?? 'asset'}
-                              className="cursor-zoom-in rounded-sm object-cover transition hover:opacity-80"
+                              className="cursor-zoom-in rounded-md object-cover transition hover:opacity-80"
                               onClick={() =>
                                 setPreviewImage(item.image ?? assetImage ?? '')
                               }
@@ -812,14 +813,14 @@ export default function DetailPage() {
                       {transaction.items.map((item, i) => (
                         <div
                           key={i}
-                          className="flex items-center gap-4 rounded-sm border border-neutral-200 p-3 shadow-sm dark:border-neutral-700"
+                          className="flex items-center gap-4 rounded-md border border-neutral-200 p-3 shadow-sm dark:border-neutral-700"
                         >
                           <Image
                             src={item.image ?? assetImage ?? ''}
                             width={70}
                             height={70}
                             alt={item.name ?? 'asset'}
-                            className="cursor-zoom-in rounded-sm object-cover transition hover:opacity-80"
+                            className="cursor-zoom-in rounded-md object-cover transition hover:opacity-80"
                             onClick={() =>
                               setPreviewImage(item.image ?? assetImage ?? '')
                             }
@@ -847,7 +848,7 @@ export default function DetailPage() {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
           onClick={() => setPreviewImage(null)}
         >
-          <div className="relative h-[80vh] w-full max-w-4xl overflow-hidden rounded-sm bg-transparent">
+          <div className="relative h-[80vh] w-full max-w-4xl overflow-hidden rounded-md bg-transparent">
             <Image
               src={previewImage}
               alt="Preview"
@@ -859,7 +860,7 @@ export default function DetailPage() {
         </div>
       )}
       <Dialog open={showPenyerahanModal} onOpenChange={setShowPenyerahanModal}>
-        <DialogContent className="max-w-2xl rounded-sm transition-all [&_button[data-slot='dialog-close']]:top-6">
+        <DialogContent className="max-w-2xl rounded-md transition-all">
           <DialogHeader>
             <DialogTitle>Bukti Penerimaan</DialogTitle>
             <DialogDescription>
@@ -867,7 +868,7 @@ export default function DetailPage() {
             </DialogDescription>
           </DialogHeader>
           {penyerahanImage && (
-            <div className="relative h-96 w-full overflow-hidden rounded-sm bg-neutral-100 dark:bg-neutral-800">
+            <div className="relative h-96 w-full overflow-hidden rounded-md bg-neutral-100 dark:bg-neutral-800">
               <Image
                 src={penyerahanImage.url}
                 alt={penyerahanImage.name}
@@ -879,7 +880,7 @@ export default function DetailPage() {
         </DialogContent>
       </Dialog>{' '}
       <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
-        <AlertDialogContent className="rounded-sm">
+        <AlertDialogContent className="rounded-md">
           <AlertDialogHeader>
             <AlertDialogTitle>Konfirmasi Pembatalan</AlertDialogTitle>
             <AlertDialogDescription>
@@ -889,13 +890,13 @@ export default function DetailPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel
-              className="cursor-pointer rounded-sm"
+              className="cursor-pointer rounded-md"
               disabled={cancelLoading}
             >
               Batal
             </AlertDialogCancel>
             <AlertDialogAction
-              className="cursor-pointer rounded-sm bg-red-600 hover:bg-red-700"
+              className="cursor-pointer rounded-md bg-red-600 hover:bg-red-700"
               disabled={cancelLoading}
               onClick={async () => {
                 if (!transaction?.id) return;

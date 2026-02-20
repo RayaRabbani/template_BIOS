@@ -298,14 +298,14 @@ export default function DetailPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mt-4">
           <div className="col-span-2 space-y-4">
-            <div className="rounded-sm shadow-lg border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900 p-4">
+            <div className="rounded-md shadow-lg border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900 p-4">
               <Skeleton className="h-6 w-56 mb-4" />
               <div className="mt-6 flex justify-center">
                 <Skeleton className="h-56 w-56 rounded" />
               </div>
             </div>
 
-            <div className="rounded-sm border shadow-lg border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900 p-4 space-y-4">
+            <div className="rounded-md border shadow-lg border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900 p-4 space-y-4">
               <div>
                 <Skeleton className="h-5 w-48 mb-2" />
                 <Skeleton className="h-3 w-64" />
@@ -321,11 +321,11 @@ export default function DetailPage() {
           </div>
 
           <div className="space-y-4">
-            <div className="rounded-sm shadow-lg border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900 p-4">
+            <div className="rounded-md shadow-lg border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900 p-4">
               <Skeleton className="h-40 w-full" />
             </div>
 
-            <div className="rounded-sm shadow-lg border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900 p-4 space-y-2">
+            <div className="rounded-md shadow-lg border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900 p-4 space-y-2">
               {Array.from({ length: 4 }).map((_, i) => (
                 <Skeleton key={i} className="h-3 w-full" />
               ))}
@@ -357,21 +357,21 @@ export default function DetailPage() {
       />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mt-4">
         <div className="col-span-2 space-y-4">
-          <Card className="rounded-sm shadow-lg border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
+          <Card className="rounded-md shadow-lg border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
             <CardContent className="">
               <CardTitle className="text-m dark:text-white">
                 Scan QR untuk melihat detail transaksi
               </CardTitle>
 
               <div className="mt-6 flex justify-center">
-                <div className="p-6 rounded-sm shadow bg-white/70 dark:bg-neutral-800 border dark:border-neutral-700 backdrop-blur">
+                <div className="p-6 rounded-md shadow bg-white/70 dark:bg-neutral-800 border dark:border-neutral-700 backdrop-blur">
                   <QRCodeCanvas value={transaction.slug ?? ""} size={230} />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="rounded-sm border shadow-lg border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
+          <Card className="rounded-md border shadow-lg border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
             <CardHeader>
               <CardTitle className="text-m dark:text-white">
                 Informasi Transaksi
@@ -426,6 +426,7 @@ export default function DetailPage() {
                       <AvatarImage
                         src={transaction.employeePic ?? undefined}
                         alt={transaction.employee}
+                        className="object-cover object-top w-full h-full"
                       />
                     ) : (
                       <AvatarFallback>
@@ -529,7 +530,7 @@ export default function DetailPage() {
                           ml-14
                           backdrop-blur-lg 
                           bg-white/20 dark:bg-neutral-900/20 
-                          p-4 rounded-sm 
+                          p-4 rounded-md 
                           border-2 border-white/50 dark:border-neutral-600/60
                           shadow-xl
                         "
@@ -591,7 +592,7 @@ export default function DetailPage() {
                             ml-14
                             backdrop-blur-lg 
                             bg-white/20 dark:bg-neutral-900/20 
-                            p-4 rounded-sm 
+                            p-4 rounded-md 
                             border-2 border-white/50 dark:border-neutral-600/60
                             shadow-sm
                           "
@@ -628,7 +629,7 @@ export default function DetailPage() {
                 {penyerahanData && (
                   <div className="mt-6">
                     <Button
-                      className="w-full bg-blue-600 text-white hover:bg-blue-700 rounded-sm flex items-center gap-2 justify-center cursor-pointer"
+                      className="w-full bg-blue-600 text-white hover:bg-blue-700 rounded-md flex items-center gap-2 justify-center cursor-pointer"
                       onClick={() => {
                         if (
                           penyerahanData &&
@@ -670,7 +671,7 @@ export default function DetailPage() {
         </div>
 
         <div className="col-span-2 lg:col-span-1">
-          <Card className="sticky top-0 rounded-sm shadow-lg border rounded-sm shadow-lg border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
+          <Card className="sticky top-0 rounded-md shadow-lg border rounded-md shadow-lg border border-neutral-200 dark:border-neutral-800 dark:bg-neutral-900">
             <CardHeader>
               <CardTitle className="text-m dark:text-white">
                 {penyerahanData
@@ -724,14 +725,14 @@ export default function DetailPage() {
                               return (
                                 <div
                                   key={i}
-                                  className="flex items-center gap-4 border border-neutral-200 dark:border-neutral-700 p-3 rounded-sm shadow-sm"
+                                  className="flex items-center gap-4 border border-neutral-200 dark:border-neutral-700 p-3 rounded-md shadow-sm"
                                 >
                                   <Image
                                     src={imageUrl}
                                     width={70}
                                     height={70}
                                     alt={(item.nama as string) ?? "asset"}
-                                    className="rounded-sm object-cover cursor-zoom-in hover:opacity-80 transition"
+                                    className="rounded-md object-cover cursor-zoom-in hover:opacity-80 transition"
                                     onClick={() => setPreviewImage(imageUrl)}
                                   />
                                   <div>
@@ -780,14 +781,14 @@ export default function DetailPage() {
                             return (
                               <div
                                 key={i}
-                                className="flex items-center gap-4 border border-neutral-200 dark:border-neutral-700 p-3 rounded-sm shadow-sm"
+                                className="flex items-center gap-4 border border-neutral-200 dark:border-neutral-700 p-3 rounded-md shadow-sm"
                               >
                                 <Image
                                   src={imageUrl}
                                   width={70}
                                   height={70}
                                   alt={(item.nama as string) ?? "asset"}
-                                  className="rounded-sm object-cover cursor-zoom-in hover:opacity-80 transition"
+                                  className="rounded-md object-cover cursor-zoom-in hover:opacity-80 transition"
                                   onClick={() => setPreviewImage(imageUrl)}
                                 />
                                 <div>
@@ -835,14 +836,14 @@ export default function DetailPage() {
                         {transaction.items.map((item, i) => (
                           <div
                             key={i}
-                            className="flex items-center gap-4 border border-neutral-200 dark:border-neutral-700 p-3 rounded-sm shadow-sm"
+                            className="flex items-center gap-4 border border-neutral-200 dark:border-neutral-700 p-3 rounded-md shadow-sm"
                           >
                             <Image
                               src={item.image ?? assetImage ?? ""}
                               width={70}
                               height={70}
                               alt={item.name ?? "asset"}
-                              className="rounded-sm object-cover cursor-zoom-in hover:opacity-80 transition"
+                              className="rounded-md object-cover cursor-zoom-in hover:opacity-80 transition"
                               onClick={() =>
                                 setPreviewImage(item.image ?? assetImage ?? "")
                               }
@@ -864,14 +865,14 @@ export default function DetailPage() {
                       {transaction.items.map((item, i) => (
                         <div
                           key={i}
-                          className="flex items-center gap-4 border border-neutral-200 dark:border-neutral-700 p-3 rounded-sm shadow-sm"
+                          className="flex items-center gap-4 border border-neutral-200 dark:border-neutral-700 p-3 rounded-md shadow-sm"
                         >
                           <Image
                             src={item.image ?? assetImage ?? ""}
                             width={70}
                             height={70}
                             alt={item.name ?? "asset"}
-                            className="rounded-sm object-cover cursor-zoom-in hover:opacity-80 transition"
+                            className="rounded-md object-cover cursor-zoom-in hover:opacity-80 transition"
                             onClick={() =>
                               setPreviewImage(item.image ?? assetImage ?? "")
                             }
@@ -899,7 +900,7 @@ export default function DetailPage() {
           className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center"
           onClick={() => setPreviewImage(null)}
         >
-          <div className="relative max-w-4xl w-full h-[80vh] rounded-sm overflow-hidden bg-transparent">
+          <div className="relative max-w-4xl w-full h-[80vh] rounded-md overflow-hidden bg-transparent">
             <Image
               src={previewImage ?? ""}
               alt="Preview"
@@ -911,7 +912,7 @@ export default function DetailPage() {
         </div>
       )}
       <Dialog open={showPenyerahanModal} onOpenChange={setShowPenyerahanModal}>
-        <DialogContent className="rounded-sm max-w-2xl transition-all [&_button[data-slot='dialog-close']]:top-6">
+        <DialogContent className="rounded-md max-w-2xl transition-all">
           <DialogHeader>
             <DialogTitle>Bukti Penerimaan</DialogTitle>
             <DialogDescription>
@@ -919,7 +920,7 @@ export default function DetailPage() {
             </DialogDescription>
           </DialogHeader>
           {penyerahanImage && (
-            <div className="relative w-full h-96 bg-neutral-100 dark:bg-neutral-800 rounded-sm overflow-hidden">
+            <div className="relative w-full h-96 bg-neutral-100 dark:bg-neutral-800 rounded-md overflow-hidden">
               <Image
                 src={penyerahanImage.url}
                 alt={penyerahanImage.name}
@@ -931,7 +932,7 @@ export default function DetailPage() {
         </DialogContent>
       </Dialog>
       <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
-        <AlertDialogContent className="rounded-sm">
+        <AlertDialogContent className="rounded-md">
           <AlertDialogHeader>
             <AlertDialogTitle>Konfirmasi Pembatalan</AlertDialogTitle>
             <AlertDialogDescription>
@@ -942,13 +943,13 @@ export default function DetailPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel
-              className="cursor-pointer rounded-sm"
+              className="cursor-pointer rounded-md"
               disabled={cancelLoading}
             >
               Batal
             </AlertDialogCancel>
             <AlertDialogAction
-              className="bg-red-600 hover:bg-red-700 cursor-pointer rounded-sm"
+              className="bg-red-600 hover:bg-red-700 cursor-pointer rounded-md"
               disabled={cancelLoading}
               onClick={async () => {
                 if (!transaction?.id) return;

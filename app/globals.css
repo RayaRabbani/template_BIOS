@@ -136,6 +136,25 @@
   }
 }
 
+/* Override utility classes that reference the old hardcoded green (#01793b)
+   so they use the theme variable `--sidebar-primary`. This ensures
+   precompiled Tailwind utilities like `bg-[#01793b]` behave like
+   `bg-sidebar-primary` without modifying every generated class. */
+.bg-\[\#01793b\] {
+  background-color: var(--sidebar-primary) !important;
+}
+.text-\[\#01793b\] {
+  color: var(--sidebar-primary) !important;
+}
+.focus\:border-\[\#01793b\]:focus {
+  border-color: var(--sidebar-primary) !important;
+}
+.focus\:ring-\[\#01793b\]:focus {
+  /* fall back to a simple box-shadow ring using the variable */
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--sidebar-primary) 16%, transparent) !important;
+}
+
 @media (min-width: 768px) {
   @layer base {
     body {

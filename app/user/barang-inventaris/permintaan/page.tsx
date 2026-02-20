@@ -8,8 +8,6 @@ import { useSession } from 'next-auth/react';
 import AssetCard from '@/components/asset-card';
 import CartModal from '@/components/modals/user/barang-inventaris/cart-modal';
 import Navbar from '@/components/navbar';
-import { Card, CardContent } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
 import { getKategori, getRequestCart } from '@/lib/api/user';
 import { Asset } from '@/types/asset';
 import { CartItem } from '@/types/cart';
@@ -110,63 +108,49 @@ export default function PermintaanPage() {
         cartLabel="Detail Permintaan"
       />
 
-      <Card>
-        <CardContent>
-          {loading ? (
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="animate-pulse overflow-hidden rounded-sm border bg-white shadow-sm dark:bg-neutral-900"
-                >
-                  <div className="relative h-56 w-full bg-gray-200 dark:bg-neutral-800" />
-
-                  <div className="p-4">
-                    <div className="mb-2 h-6 w-3/4">
-                      <Skeleton className="h-6 w-full" />
-                    </div>
-                    <div className="mb-4 h-4 w-1/2">
-                      <Skeleton className="h-4 w-full" />
-                    </div>
-                    <div className="h-10">
-                      <Skeleton className="h-10 w-full rounded-sm" />
-                    </div>
-                  </div>
-                </div>
-              ))}
+      <div className="mt-6">
+        {loading ? (
+          <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <AssetCard
+                key={i}
+                loading={true}
+                item={{} as unknown as Asset}
+                onAdd={() => {}}
+              />
+            ))}
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="rounded-full bg-neutral-100 p-4 dark:bg-neutral-800">
+              <Inbox
+                size={32}
+                className="text-neutral-400 dark:text-neutral-500"
+              />
             </div>
-          ) : filtered.length === 0 ? (
-            <div className="flex items-center justify-center p-12">
-              <div className="text-center">
-                <Inbox
-                  size={48}
-                  className="mx-auto text-neutral-400 dark:text-neutral-500"
-                />
-                <h3 className="mt-4 text-lg font-semibold text-neutral-700 dark:text-neutral-200">
-                  Tidak ada data
-                </h3>
-                <p className="mt-2 text-sm text-neutral-500">
-                  Tidak ada asset yang cocok dengan pencarian.
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-              {filtered.map(item => (
-                <AssetCard
-                  key={item.id}
-                  item={item}
-                  onAdd={handleAdd}
-                  onAddedSuccess={handleRefreshAfterSubmit}
-                  type="permintaan"
-                  addModal="kategori"
-                  allItems={assets}
-                />
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            <h3 className="mt-4 text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+              Tidak ada data
+            </h3>
+            <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
+              Tidak ada asset yang cocok dengan pencarian &quot;{search}&quot;.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
+            {filtered.map(item => (
+              <AssetCard
+                key={item.id}
+                item={item}
+                onAdd={handleAdd}
+                onAddedSuccess={handleRefreshAfterSubmit}
+                type="permintaan"
+                addModal="kategori"
+                allItems={assets}
+              />
+            ))}
+          </div>
+        )}
+      </div>
 
       <CartModal
         open={openCart}
