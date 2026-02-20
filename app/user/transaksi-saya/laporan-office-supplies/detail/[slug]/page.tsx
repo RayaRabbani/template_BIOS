@@ -299,14 +299,14 @@ export default function DetailPage() {
 
         <div className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-3">
           <div className="col-span-2 space-y-4">
-            <div className="rounded-md border border-neutral-200 p-4 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
+            <div className="rounded-md border border-neutral-100 p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
               <Skeleton className="mb-4 h-6 w-56" />
               <div className="mt-6 flex justify-center">
                 <Skeleton className="h-56 w-56 rounded" />
               </div>
             </div>
 
-            <div className="space-y-4 rounded-md border border-neutral-200 p-4 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
+            <div className="space-y-4 rounded-md border border-neutral-100 p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
               <div>
                 <Skeleton className="mb-2 h-5 w-48" />
                 <Skeleton className="h-3 w-64" />
@@ -322,11 +322,11 @@ export default function DetailPage() {
           </div>
 
           <div className="space-y-4">
-            <div className="rounded-md border border-neutral-200 p-4 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
+            <div className="rounded-md border border-neutral-100 p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
               <Skeleton className="h-40 w-full" />
             </div>
 
-            <div className="space-y-2 rounded-md border border-neutral-200 p-4 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
+            <div className="space-y-2 rounded-md border border-neutral-100 p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
               {Array.from({ length: 4 }).map((_, i) => (
                 <Skeleton key={i} className="h-3 w-full" />
               ))}
@@ -358,21 +358,21 @@ export default function DetailPage() {
       />
       <div className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-3">
         <div className="col-span-2 space-y-4">
-          <Card className="rounded-md border border-neutral-200 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
+          <Card className="rounded-md border border-neutral-100 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
             <CardContent className="">
               <CardTitle className="text-m dark:text-white">
                 Scan QR untuk melihat detail transaksi
               </CardTitle>
 
               <div className="mt-6 flex justify-center">
-                <div className="rounded-md border bg-white/70 p-6 shadow backdrop-blur dark:border-neutral-700 dark:bg-neutral-800">
+                <div className="rounded-md border border-neutral-100 bg-white p-6 shadow-sm dark:border-neutral-700 dark:bg-neutral-800">
                   <QRCodeCanvas value={transaction.slug} size={230} />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="rounded-md border border-neutral-200 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
+          <Card className="rounded-md border border-neutral-100 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
             <CardHeader>
               <CardTitle className="text-m dark:text-white">
                 Informasi Transaksi
@@ -418,7 +418,7 @@ export default function DetailPage() {
                       <AvatarImage
                         src={transaction.employeePic ?? undefined}
                         alt={transaction.employee}
-                        className="object-cover object-top w-full h-full"
+                        className="h-full w-full object-cover object-top"
                       />
                     ) : (
                       <AvatarFallback>
@@ -505,7 +505,7 @@ export default function DetailPage() {
                           <Icon size={22} color="white" />
                         </div>
 
-                        <div className="ml-14 rounded-md border-2 border-white/50 bg-white/20 p-4 shadow-sm backdrop-blur-lg dark:border-neutral-600/60 dark:bg-neutral-900/20">
+                        <div className="ml-14 rounded-md border border-neutral-100 bg-white p-4 shadow-sm dark:border-neutral-700">
                           <p className="font-semibold text-neutral-900 dark:text-neutral-100">
                             {(() => {
                               const key = (s.status || '')
@@ -551,7 +551,7 @@ export default function DetailPage() {
                           <HourglassIcon className="h-6 w-6 animate-spin text-white" />
                         </div>
 
-                        <div className="ml-14 rounded-md border-2 border-white/50 bg-white/20 p-4 shadow-sm backdrop-blur-lg dark:border-neutral-600/60 dark:bg-neutral-900/20">
+                        <div className="ml-14 rounded-md border border-neutral-100 bg-white p-4 shadow-sm dark:border-neutral-700">
                           <p className="font-semibold text-neutral-900 dark:text-neutral-100">
                             Menunggu Konfirmasi Kompilator
                           </p>
@@ -626,7 +626,7 @@ export default function DetailPage() {
         </div>
 
         <div className="col-span-2 lg:col-span-1">
-          <Card className="sticky top-2 rounded-md border border-neutral-200 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
+          <Card className="sticky top-2 rounded-md border border-neutral-100 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
             <CardHeader>
               <CardTitle className="text-m dark:text-white">
                 {penyerahanData
@@ -675,7 +675,7 @@ export default function DetailPage() {
                               return (
                                 <div
                                   key={i}
-                                  className="flex items-center gap-4 rounded-md border border-neutral-200 p-3 shadow-sm dark:border-neutral-700"
+                                  className="flex items-center gap-4 rounded-md border border-neutral-100 p-3 shadow-sm dark:border-neutral-700"
                                 >
                                   <Image
                                     src={imageUrl}
@@ -731,7 +731,7 @@ export default function DetailPage() {
                             return (
                               <div
                                 key={i}
-                                className="flex items-center gap-4 rounded-md border border-neutral-200 p-3 shadow-sm dark:border-neutral-700"
+                                className="flex items-center gap-4 rounded-md border border-neutral-100 p-3 shadow-sm dark:border-neutral-700"
                               >
                                 <Image
                                   src={imageUrl}
@@ -784,7 +784,7 @@ export default function DetailPage() {
                         {transaction.items.map((item, i) => (
                           <div
                             key={i}
-                            className="flex items-center gap-4 rounded-md border border-neutral-200 p-3 shadow-sm dark:border-neutral-700"
+                            className="flex items-center gap-4 rounded-md border border-neutral-100 p-3 shadow-sm dark:border-neutral-700"
                           >
                             <Image
                               src={item.image ?? assetImage ?? ''}
@@ -813,7 +813,7 @@ export default function DetailPage() {
                       {transaction.items.map((item, i) => (
                         <div
                           key={i}
-                          className="flex items-center gap-4 rounded-md border border-neutral-200 p-3 shadow-sm dark:border-neutral-700"
+                          className="flex items-center gap-4 rounded-md border border-neutral-100 p-3 shadow-sm dark:border-neutral-700"
                         >
                           <Image
                             src={item.image ?? assetImage ?? ''}

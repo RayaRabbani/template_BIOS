@@ -22,6 +22,8 @@ export default function PermintaanPage() {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(true);
   const searchTimer = useRef<number | null>(null);
+  const assetsRef = useRef<Asset[]>([]);
+  const isFirstSearch = useRef(true);
 
   const fetchServerCart = useCallback(async () => {
     if (!session?.user?.id) return;
@@ -39,15 +41,19 @@ export default function PermintaanPage() {
   }, [session?.user?.id]);
 
   const fetchAssets = useCallback(async (q?: string) => {
-    setLoading(true);
+    const shouldShowLoading = assetsRef.current.length === 0;
+    if (shouldShowLoading) setLoading(true);
     try {
       const json = await getKategori(q);
-      setAssets((json?.data as Asset[]) || []);
+      const newAssets = (json?.data as Asset[]) || [];
+      setAssets(newAssets);
+      assetsRef.current = newAssets;
     } catch (error) {
       console.error('Error fetch kategori:', error);
       setAssets([]);
+      assetsRef.current = [];
     } finally {
-      setLoading(false);
+      if (shouldShowLoading) setLoading(false);
     }
   }, []);
 
@@ -70,6 +76,11 @@ export default function PermintaanPage() {
   }, [fetchServerCart, fetchAssets]);
 
   useEffect(() => {
+    if (isFirstSearch.current) {
+      isFirstSearch.current = false;
+      return;
+    }
+
     if (searchTimer.current) {
       window.clearTimeout(searchTimer.current);
       searchTimer.current = null;

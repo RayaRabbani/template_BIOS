@@ -275,6 +275,8 @@ export function AddAssetModal({
     };
   }, [open, type, item]);
 
+  if (!open) return null;
+
   return (
     <>
       <Dialog open={open} onOpenChange={onClose}>
@@ -727,7 +729,7 @@ export function AddAssetModal({
                 disabled={submitting}
               >
                 <CirclePlus className="h-4 w-4" />
-                Tambahkan
+                {submitting ? 'Menyimpan...' : 'Tambahkan'}
               </Button>
             </div>
           )}

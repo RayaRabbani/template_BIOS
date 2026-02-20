@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import Image from 'next/image';
+
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -82,7 +83,6 @@ export default function ConfirmApprover({
                     if (Array.isArray(target.item) && target.item.length > 0) {
                       return target.item.length;
                     }
-                    // Fallback: if we have individual asset data, count as 1
                     if (target.assetName) {
                       return 1;
                     }
@@ -105,11 +105,14 @@ export default function ConfirmApprover({
                       target.item.map((asset, index) => (
                         <div
                           key={asset.id ?? index}
-                          className="flex items-center gap-3 rounded-md border border-neutral-200 bg-neutral-50 p-3 dark:border-neutral-800 dark:bg-neutral-800/40"
+                          className="flex items-center gap-3 rounded-sm border border-neutral-200 bg-neutral-50 p-3 dark:border-neutral-800 dark:bg-neutral-800/40"
                         >
-                          <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-md border">
-                            <Avatar className="h-14 w-14 rounded-md">
-                              <AvatarImage
+                          <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-sm border">
+                            {resolveAssetImage(
+                              asset.pic,
+                              type === 'office-supplies' ? 'office' : 'asset'
+                            ) ? (
+                              <Image
                                 src={
                                   resolveAssetImage(
                                     asset.pic,
@@ -119,13 +122,16 @@ export default function ConfirmApprover({
                                   ) ?? '/placeholder.png'
                                 }
                                 alt={asset.nama || '-'}
-                                className="object-cover object-top w-full h-full"
+                                width={56}
+                                height={56}
+                                className="h-14 w-14 rounded-sm object-cover object-top"
                               />
-                              <AvatarFallback className="rounded-md bg-neutral-100 dark:bg-neutral-800">
+                            ) : (
+                              <div className="flex h-14 w-14 items-center justify-center rounded-sm bg-neutral-100 text-sm">
                                 {asset.nama?.substring(0, 2).toUpperCase() ||
                                   'AS'}
-                              </AvatarFallback>
-                            </Avatar>
+                              </div>
+                            )}
                           </div>
 
                           <div className="min-w-0 flex-1">
@@ -140,10 +146,14 @@ export default function ConfirmApprover({
                       ))
                     ) : target.assetName ? (
                       // Fallback: display single asset from individual properties
-                      <div className="flex items-center gap-3 rounded-md border border-neutral-200 bg-neutral-50 p-3 dark:border-neutral-800 dark:bg-neutral-800/40">
-                        <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-md border">
-                          <Avatar className="h-14 w-14 rounded-md">
-                            <AvatarImage
+                      <div className="flex items-center gap-3 rounded-sm border border-neutral-200 bg-neutral-50 p-3 dark:border-neutral-800 dark:bg-neutral-800/40">
+                        <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-sm border">
+                          {resolveAssetImage(
+                            (target as ModalTarget & { assetImage?: string })
+                              .assetImage,
+                            type === 'office-supplies' ? 'office' : 'asset'
+                          ) ? (
+                            <Image
                               src={
                                 resolveAssetImage(
                                   (
@@ -157,14 +167,17 @@ export default function ConfirmApprover({
                                 ) ?? '/placeholder.png'
                               }
                               alt={target.assetName || '-'}
-                              className="object-cover object-top w-full h-full"
+                              width={56}
+                              height={56}
+                              className="h-14 w-14 rounded-sm object-cover object-top"
                             />
-                            <AvatarFallback className="rounded-md bg-neutral-100 dark:bg-neutral-800">
+                          ) : (
+                            <div className="flex h-14 w-14 items-center justify-center rounded-sm bg-neutral-100 text-sm">
                               {target.assetName
                                 ?.substring(0, 2)
                                 .toUpperCase() || 'AS'}
-                            </AvatarFallback>
-                          </Avatar>
+                            </div>
+                          )}
                         </div>
 
                         <div className="min-w-0 flex-1">

@@ -135,7 +135,20 @@ export default function OfficeCartModal({
     setDeletingIds(s => [...s, id]);
     try {
       await deleteProductCart(id);
-      setCart(prev => prev.filter(c => c.id !== id));
+      try {
+        await fetchCart();
+      } catch (err) {
+        console.error('Failed to refresh cart after delete:', err);
+      }
+
+      if (typeof onRefresh === 'function') {
+        try {
+          await onRefresh();
+        } catch (err) {
+          console.error('onRefresh failed after delete:', err);
+        }
+      }
+
       toast.success('Barang dihapus dari keranjang');
     } catch (err: unknown) {
       console.error('Failed to delete cart item:', err);

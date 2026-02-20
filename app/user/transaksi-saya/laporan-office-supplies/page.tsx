@@ -69,6 +69,8 @@ import type {
   HistoryItem,
 } from '@/types/user/office-supplies/transaksi';
 
+const __initialFetchShownForUser = new Set<string>();
+
 interface AssetItem {
   nama?: string;
   pic?: string | null;
@@ -120,6 +122,8 @@ export default function HistoryPage() {
     status: true,
   });
   const searchTimer = useRef<number | null>(null);
+  const isFirstSearch = useRef(true);
+  const dataRef = useRef<HistoryItem[]>([]);
 
   const getAssetsForItem = (it: HistoryItem) => {
     if (Array.isArray(it.itemResult) && it.itemResult.length > 0)
@@ -144,7 +148,11 @@ export default function HistoryPage() {
       endDate?: string
     ) => {
       if (!session?.user?.id) return;
-      setLoading(true);
+      const shouldShowLoading = dataRef.current.length === 0;
+      const userKey = String(session?.user?.id ?? 'anon');
+      const shouldShowLoadingNow =
+        shouldShowLoading && !__initialFetchShownForUser.has(userKey);
+      if (shouldShowLoadingNow) setLoading(true);
       try {
         const payload = await getTransaksiConsumableByBadge(
           Number(session?.user?.id) || 0,
@@ -206,10 +214,12 @@ export default function HistoryPage() {
           });
 
         setData(list);
+        dataRef.current = list;
       } catch (e) {
         console.error(e);
       } finally {
         setLoading(false);
+        __initialFetchShownForUser.add(userKey);
       }
     },
     [session?.user?.id]
@@ -261,6 +271,11 @@ export default function HistoryPage() {
   }, [fetchTransaksi]);
 
   useEffect(() => {
+    if (isFirstSearch.current) {
+      isFirstSearch.current = false;
+      return;
+    }
+
     if (searchTimer.current) {
       window.clearTimeout(searchTimer.current);
       searchTimer.current = null;
@@ -294,10 +309,9 @@ export default function HistoryPage() {
   useEffect(() => {
     let mounted = true;
     async function loadPending() {
+      if (!session?.user?.id) return;
       try {
-        const payload = await getPendingConsumable(
-          Number(session?.user?.id) || 0
-        );
+        const payload = await getPendingConsumable(Number(session.user.id));
         const count = extractCountFromResponse(payload);
         if (mounted) setPendingCount(count);
       } catch (e) {
@@ -309,7 +323,7 @@ export default function HistoryPage() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [session?.user?.id]);
 
   const filtered = data.filter(item => {
     const query = search.toLowerCase();

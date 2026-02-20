@@ -68,6 +68,8 @@ import type {
   HistoryItem,
 } from '@/types/user/barang-inventaris/transaksi';
 
+const __initialFetchShownForUser = new Set<string>();
+
 export default function HistoryPage() {
   const [data, setData] = useState<HistoryItem[]>([]);
   const [openPreview, setOpenPreview] = useState(false);
@@ -114,6 +116,8 @@ export default function HistoryPage() {
   });
 
   const searchTimer = useRef<number | null>(null);
+  const isFirstSearch = useRef(true);
+  const dataRef = useRef<HistoryItem[]>([]);
 
   const getAssetsForItem = (it: HistoryItem) => {
     if (Array.isArray(it.itemResult) && it.itemResult.length > 0)
@@ -142,7 +146,11 @@ export default function HistoryPage() {
       endDate?: string
     ) => {
       if (!session?.user?.id) return;
-      setLoading(true);
+      const shouldShowLoading = dataRef.current.length === 0;
+      const userKey = String(session?.user?.id ?? 'anon');
+      const shouldShowLoadingNow =
+        shouldShowLoading && !__initialFetchShownForUser.has(userKey);
+      if (shouldShowLoadingNow) setLoading(true);
       try {
         const json = await getTransaksiByBadge(
           Number(session?.user?.id) || 0,
@@ -204,10 +212,12 @@ export default function HistoryPage() {
           });
 
         setData(list);
+        dataRef.current = list;
       } catch (e) {
         console.error(e);
       } finally {
         setLoading(false);
+        __initialFetchShownForUser.add(userKey);
       }
     },
     [session?.user?.id]
@@ -257,6 +267,11 @@ export default function HistoryPage() {
   }, [fetchTransaksi]);
 
   useEffect(() => {
+    if (isFirstSearch.current) {
+      isFirstSearch.current = false;
+      return;
+    }
+
     if (searchTimer.current) {
       window.clearTimeout(searchTimer.current);
       searchTimer.current = null;
@@ -290,8 +305,9 @@ export default function HistoryPage() {
   useEffect(() => {
     let mounted = true;
     async function loadPending() {
+      if (!session?.user?.id) return;
       try {
-        const json = await getPendingTransaksi(session?.user?.id || '0');
+        const json = await getPendingTransaksi(session.user.id);
         const count = extractPendingCountFromData(json);
         if (mounted) setPendingCount(count);
       } catch (e) {
@@ -303,7 +319,7 @@ export default function HistoryPage() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [session?.user?.id]);
 
   const filtered = data.filter(item => {
     const query = search.toLowerCase();

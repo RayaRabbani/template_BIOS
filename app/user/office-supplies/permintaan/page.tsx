@@ -26,18 +26,24 @@ export default function PermintaanOfficePage() {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(true);
   const searchTimer = useRef<number | null>(null);
+  const assetsRef = useRef<Asset[]>([]);
+  const isFirstSearch = useRef(true);
 
   const fetchProdukData = useCallback(async (q?: string) => {
-    setLoading(true);
+    const shouldShowLoading = assetsRef.current.length === 0;
+    if (shouldShowLoading) setLoading(true);
     try {
       const json = await getProdukAvailable(q);
       const data = (json?.data as ProdukApi[]) || [];
-      setAssets(data.map(mapProdukToAsset));
+      const newAssets = data.map(mapProdukToAsset);
+      setAssets(newAssets);
+      assetsRef.current = newAssets;
     } catch (error) {
       console.error('Error fetch produk:', error);
       setAssets([]);
+      assetsRef.current = [];
     } finally {
-      setLoading(false);
+      if (shouldShowLoading) setLoading(false);
     }
   }, []);
 
@@ -101,6 +107,11 @@ export default function PermintaanOfficePage() {
   }, [fetchProdukData, fetchCartData]);
 
   useEffect(() => {
+    if (isFirstSearch.current) {
+      isFirstSearch.current = false;
+      return;
+    }
+
     if (searchTimer.current) {
       window.clearTimeout(searchTimer.current);
       searchTimer.current = null;
