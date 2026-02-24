@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { Eye, Inbox, X } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
 
 import {
@@ -67,6 +68,7 @@ export default function PendingApprovalModal({
   const [detailData, setDetailData] = useState<DetailApprovalData | null>(null);
   const [pinjamCount, setPinjamCount] = useState<number>(0);
   const [permintaanCount, setPermintaanCount] = useState<number>(0);
+  const { data: session } = useSession();
   // AlertDialog / confirmation state
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [pendingCancelTarget, setPendingCancelTarget] = useState<{
@@ -117,8 +119,14 @@ export default function PendingApprovalModal({
       setLoading(true);
       setError(null);
       try {
-        const id = '3082625';
-        const json = (await getPendingTransaksi(id)) as PendingApiResponse;
+        if (!session?.user?.id) {
+          setLoading(false);
+          return;
+        }
+
+        const json = (await getPendingTransaksi(
+          session.user.id
+        )) as PendingApiResponse;
 
         const payload: ApiResponseData | null =
           (json?.data as ApiResponseData) ?? null;
@@ -161,7 +169,7 @@ export default function PendingApprovalModal({
     }
 
     if (open) fetchPending();
-  }, [open]);
+  }, [open, session?.user?.id]);
 
   const currentList =
     tab === 'peminjaman'
@@ -190,7 +198,7 @@ export default function PendingApprovalModal({
       }
 
       // Refresh data after successful cancellation
-      const employeeId = '3082625';
+      const employeeId = session?.user?.id || '0';
       const json = (await getPendingTransaksi(
         employeeId
       )) as PendingApiResponse;
