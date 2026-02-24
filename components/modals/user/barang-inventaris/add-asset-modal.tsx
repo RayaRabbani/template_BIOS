@@ -275,11 +275,43 @@ export function AddAssetModal({
     };
   }, [open, type, item]);
 
+  useEffect(() => {
+    const items = (fetchedItems ?? suggestedItems) || [];
+    if (!items || items.length === 0) return;
+
+    const imgs: HTMLImageElement[] = [];
+    items.forEach(it => {
+      if (!it || !it.image) return;
+      try {
+        const img = typeof window !== 'undefined' ? new window.Image() : null;
+        if (img) {
+          img.src = it.image;
+          imgs.push(img);
+        }
+      } catch (e) {
+        // ignore
+      }
+    });
+
+    return () => {
+      imgs.forEach(i => {
+        try {
+          i.src = '';
+        } catch (e) {}
+      });
+    };
+  }, [fetchedItems, suggestedItems]);
+
   if (!open) return null;
 
   return (
     <>
-      <Dialog open={open} onOpenChange={onClose}>
+      <Dialog
+        open={open}
+        onOpenChange={v => {
+          if (!v) onClose();
+        }}
+      >
         <DialogContent className="my-4 w-[90%] overflow-hidden rounded-md border border-neutral-200 bg-white p-0 shadow-xl sm:my-2 sm:max-w-md md:max-w-lg dark:border-neutral-700 dark:bg-neutral-900">
           <div className="sticky top-0 border-neutral-100 bg-white px-6 pt-4 dark:border-neutral-800 dark:bg-neutral-900">
             <DialogHeader>
@@ -301,7 +333,9 @@ export function AddAssetModal({
                   <div className="mb-3 rounded-full bg-neutral-100 p-3 dark:bg-neutral-800">
                     <Inbox size={35} className="opacity-40" />
                   </div>
-                  <p className="text-sm">Belum ada barang inventaris yang tersedia</p>
+                  <p className="text-sm">
+                    Belum ada barang inventaris yang tersedia
+                  </p>
                 </div>
               ) : (
                 <>
@@ -765,6 +799,7 @@ export function AddAssetModal({
                 alt={(previewAsset?.name ?? selectedAsset?.name) || 'Preview'}
                 fill
                 className="cursor-zoom-out object-contain"
+                priority
                 onClick={() => {
                   setOpenPreview(false);
                   setPreviewAsset(null);

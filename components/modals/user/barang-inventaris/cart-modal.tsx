@@ -165,6 +165,33 @@ export default function CartModal({
     }
   }, [open]);
 
+  // prefetch cart item images to warm browser cache
+  useEffect(() => {
+    if (!items || items.length === 0) return;
+    const imgs: HTMLImageElement[] = [];
+    items.forEach(it => {
+      const src = typeof it.image === 'string' ? it.image : undefined;
+      if (!src) return;
+      try {
+        const img = typeof window !== 'undefined' ? new window.Image() : null;
+        if (img) {
+          img.src = src;
+          imgs.push(img);
+        }
+      } catch (e) {
+        // ignore
+      }
+    });
+
+    return () => {
+      imgs.forEach(i => {
+        try {
+          i.src = '';
+        } catch (e) {}
+      });
+    };
+  }, [items]);
+
   const saveChanges = async () => {
     if (!originalItems) return false;
     if (!isPermintaan) {
@@ -488,6 +515,7 @@ export default function CartModal({
                 src={previewImage}
                 alt="Preview"
                 fill
+                priority
                 className="cursor-zoom-out object-contain"
                 onClick={() => setOpenPreview(false)}
               />

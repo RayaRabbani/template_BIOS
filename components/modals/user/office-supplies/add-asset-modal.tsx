@@ -119,6 +119,38 @@ export default function AddOfficeSupplyModal({
     fetchProduk();
   }, [open, produkId]);
 
+  const imageUrl = resolveAssetImage(
+    produk?.gambarproduk?.[0]?.gambar,
+    'office'
+  );
+
+  const safeImage = imageUrl ?? '';
+
+  // prefetch product image to warm browser cache (avoid placeholder)
+  useEffect(() => {
+    const src = imageUrl;
+    if (!src) return;
+
+    const imgs: HTMLImageElement[] = [];
+    try {
+      const img = typeof window !== 'undefined' ? new window.Image() : null;
+      if (img) {
+        img.src = src;
+        imgs.push(img);
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    return () => {
+      imgs.forEach(i => {
+        try {
+          i.src = '';
+        } catch (e) {}
+      });
+    };
+  }, [imageUrl]);
+
   const handleSubmit = async () => {
     if (!produk) return;
 
@@ -184,16 +216,14 @@ export default function AddOfficeSupplyModal({
 
   if (!open) return null;
 
-  const imageUrl = resolveAssetImage(
-    produk?.gambarproduk?.[0]?.gambar,
-    'office'
-  );
-
-  const safeImage = imageUrl ?? '/images/no-image.png';
-
   return (
     <>
-      <Dialog open={open} onOpenChange={onClose}>
+      <Dialog
+        open={open}
+        onOpenChange={v => {
+          if (!v) onClose();
+        }}
+      >
         <DialogContent className="my-4 w-[90%] overflow-hidden rounded-md border border-neutral-200 bg-white p-0 shadow-xl sm:my-2 sm:max-w-md md:max-w-lg dark:border-neutral-700 dark:bg-neutral-900">
           <div className="sticky top-0 border-neutral-100 bg-white px-6 pt-4 dark:border-neutral-800 dark:bg-neutral-900">
             <DialogHeader>
@@ -259,6 +289,7 @@ export default function AddOfficeSupplyModal({
                       src={safeImage}
                       alt={name}
                       fill
+                      priority
                       className="cursor-zoom-out object-contain"
                       onClick={() => setOpenPreview(false)}
                     />

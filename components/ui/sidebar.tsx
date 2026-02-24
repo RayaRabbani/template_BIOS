@@ -166,6 +166,7 @@ function Sidebar({
   collapsedIconSections?: number;
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
+  const multiSection = (collapsedIconSections ?? 1) > 1;
 
   if (collapsible === 'none') {
     return (
@@ -202,13 +203,18 @@ function Sidebar({
             <SheetTitle>Sidebar</SheetTitle>
             <SheetDescription>Displays the mobile sidebar.</SheetDescription>
           </SheetHeader>
-          <div className="flex h-full w-full flex-col">{children}</div>
+          <div
+            className={cn(
+              'flex h-full w-full',
+              multiSection ? 'flex-row' : 'flex-col'
+            )}
+          >
+            {children}
+          </div>
         </SheetContent>
       </Sheet>
     );
   }
-
-  const multiSection = collapsedIconSections > 1;
 
   return (
     <div

@@ -12,7 +12,12 @@ import { useTheme } from 'next-themes';
 import { CustomBIOSSidebar } from '@/components/app-sidebar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Sheet, SheetContent } from '@/components/ui/sheet';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
 
@@ -65,6 +70,9 @@ export default function Navbar({
               <SidebarTrigger className="cursor-pointer" />
               <Sheet open={openMobile} onOpenChange={setOpenMobile}>
                 <SheetContent side="left" className="w-64 p-0">
+                  <SheetHeader className="sr-only">
+                    <SheetTitle>Mobile Sidebar</SheetTitle>
+                  </SheetHeader>
                   <CustomBIOSSidebar />
                 </SheetContent>
               </Sheet>

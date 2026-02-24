@@ -277,31 +277,39 @@ export function CustomBIOSSidebar() {
   const { data: session } = useSession();
   const roles: string[] = session?.user?.roles ?? [];
   const isApprover = roles.includes('approval');
-  const { open, setOpen } = useSidebar();
+  const { open, setOpen, isMobile } = useSidebar();
 
   function toggle() {
     setOpen(!open);
   }
 
+  const isCollapsed = !open && !isMobile;
+
   return (
-    <div className="relative">
+    <div className={cn('relative h-full', isMobile && 'flex-1')}>
       <aside
         className={cn(
-          'flexidden -ml-px h-full min-w-0 flex-none flex-col border-l-0 bg-white shadow-sm transition-all duration-300 group-data-[collapsible=icon]:!w-[var(--sidebar-width-icon)] md:flex dark:border-neutral-800 dark:bg-neutral-900',
-          !open ? 'w-20' : 'w-76'
+          '-ml-px flex h-full min-w-0 flex-none flex-col border-l-0 bg-white transition-all duration-300 md:flex dark:border-neutral-800 dark:bg-neutral-900',
+          isMobile
+            ? 'w-full border-none shadow-none'
+            : isCollapsed
+              ? 'w-20 shadow-sm'
+              : 'w-76 shadow-sm',
+          !isMobile &&
+            'hidden group-data-[collapsible=icon]:!w-[var(--sidebar-width-icon)] md:flex'
         )}
       >
         <div
           className={cn(
             'flex items-center gap-3 px-4 py-4 transition-all',
-            !open ? 'justify-center' : ''
+            isCollapsed ? 'justify-center' : ''
           )}
         >
           <div className="rounded-md bg-neutral-50 p-1 dark:bg-neutral-800">
             <FolderOpen className="text-neutral-800 dark:text-neutral-200" />
           </div>
 
-          {open && (
+          {!isCollapsed && (
             <h1 className="text-base font-semibold whitespace-nowrap text-neutral-900 dark:text-neutral-100">
               BIOS
             </h1>
@@ -311,10 +319,10 @@ export function CustomBIOSSidebar() {
         <nav
           className={cn(
             'flex-1 space-y-1 px-3 text-sm transition-all',
-            !open ? 'mt-1' : ''
+            isCollapsed ? 'mt-1' : ''
           )}
         >
-          {open && (
+          {!isCollapsed && (
             <p className="mb-2 text-xs tracking-wider text-neutral-500 uppercase">
               Transaksi
             </p>
@@ -322,7 +330,7 @@ export function CustomBIOSSidebar() {
 
           <CustomSidebarGroup
             title="Barang Inventaris"
-            collapsed={!open}
+            collapsed={isCollapsed}
             icon={
               <BaggageClaim
                 style={{ width: '20px', height: '20px', flexShrink: 0 }}
@@ -330,13 +338,13 @@ export function CustomBIOSSidebar() {
             }
           >
             <CustomSidebarItem
-              collapsed={!open}
+              collapsed={isCollapsed}
               href="/user/barang-inventaris/peminjaman"
               label="Peminjaman"
             />
 
             <CustomSidebarItem
-              collapsed={!open}
+              collapsed={isCollapsed}
               href="/user/barang-inventaris/permintaan"
               label="Permintaan"
             />
@@ -344,7 +352,7 @@ export function CustomBIOSSidebar() {
 
           <CustomSidebarGroup
             title="Office Supplies"
-            collapsed={!open}
+            collapsed={isCollapsed}
             icon={
               <ShoppingBag
                 style={{ width: '23px', height: '23px', flexShrink: 0 }}
@@ -352,13 +360,13 @@ export function CustomBIOSSidebar() {
             }
           >
             <CustomSidebarItem
-              collapsed={!open}
+              collapsed={isCollapsed}
               href="/user/office-supplies/permintaan"
               label="Permintaan Consumable"
             />
           </CustomSidebarGroup>
 
-          {open && (
+          {!isCollapsed && (
             <p className="mt-4 mb-2 text-xs tracking-wider text-neutral-500 uppercase">
               LAPORAN
             </p>
@@ -367,7 +375,7 @@ export function CustomBIOSSidebar() {
           {isApprover && (
             <CustomSidebarGroup
               title="Approver"
-              collapsed={!open}
+              collapsed={isCollapsed}
               icon={
                 <Handshake
                   style={{ width: '20px', height: '20px', flexShrink: 0 }}
@@ -375,7 +383,7 @@ export function CustomBIOSSidebar() {
               }
             >
               <CustomSidebarItem
-                collapsed={!open}
+                collapsed={isCollapsed}
                 href="/approver/peminjaman"
                 label="Peminjaman"
                 icon={
@@ -386,7 +394,7 @@ export function CustomBIOSSidebar() {
               />
 
               <CustomSidebarItem
-                collapsed={!open}
+                collapsed={isCollapsed}
                 href="/approver/permintaan"
                 label="Permintaan"
                 icon={
@@ -397,7 +405,7 @@ export function CustomBIOSSidebar() {
               />
 
               <CustomSidebarItem
-                collapsed={!open}
+                collapsed={isCollapsed}
                 href="/approver/office-supplies"
                 label="Permintaan Office Supplies"
                 icon={
@@ -411,7 +419,7 @@ export function CustomBIOSSidebar() {
 
           <CustomSidebarGroup
             title="Transaksi Saya"
-            collapsed={!open}
+            collapsed={isCollapsed}
             icon={
               <BriefcaseBusiness
                 style={{ width: '23px', height: '23px', flexShrink: 0 }}
@@ -419,13 +427,13 @@ export function CustomBIOSSidebar() {
             }
           >
             <CustomSidebarItem
-              collapsed={!open}
+              collapsed={isCollapsed}
               href="/user/transaksi-saya/laporan-barang-inventaris"
               label="Barang Inventaris"
             />
 
             <CustomSidebarItem
-              collapsed={!open}
+              collapsed={isCollapsed}
               href="/user/transaksi-saya/laporan-office-supplies"
               label="Office Supplies"
             />

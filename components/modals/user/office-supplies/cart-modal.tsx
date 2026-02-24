@@ -126,6 +126,33 @@ export default function OfficeCartModal({
     fetchCart();
   }, [open, fetchCart]);
 
+  // prefetch cart item images to warm browser cache
+  useEffect(() => {
+    if (!items || items.length === 0) return;
+    const imgs: HTMLImageElement[] = [];
+    items.forEach(it => {
+      const src = typeof it.image === 'string' ? it.image : undefined;
+      if (!src) return;
+      try {
+        const img = typeof window !== 'undefined' ? new window.Image() : null;
+        if (img) {
+          img.src = src;
+          imgs.push(img);
+        }
+      } catch {
+        // ignore
+      }
+    });
+
+    return () => {
+      imgs.forEach(i => {
+        try {
+          i.src = '';
+        } catch {}
+      });
+    };
+  }, [items]);
+
   const [deletingIds, setDeletingIds] = useState<number[]>([]);
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
@@ -489,6 +516,7 @@ export default function OfficeCartModal({
                 src={previewImage}
                 alt="Preview"
                 fill
+                priority
                 className="cursor-zoom-out object-contain"
                 onClick={() => setOpenPreview(false)}
               />
