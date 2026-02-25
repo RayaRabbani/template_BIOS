@@ -86,6 +86,7 @@ export default function DetailPage() {
     url: string;
     name: string;
   } | null>(null);
+  const [picEmployee, setPicEmployee] = useState<string | null>(null);
   const router = useRouter();
 
   const { slug } = useParams<{ slug: string }>();
@@ -266,6 +267,20 @@ export default function DetailPage() {
               penData.item_konfirmasi;
             if (Array.isArray(ik)) setItemKonfirmasi(ik as ItemApi[]);
           }
+
+          // Extract PIC employee from inventoryResult if data is array
+          if (Array.isArray(penData)) {
+            const firstItem = penData[0];
+            if (firstItem && typeof firstItem === 'object') {
+              const firstItemObj = firstItem as Record<string, unknown>;
+              const inventoryResult = firstItemObj.inventoryResult;
+              if (inventoryResult && typeof inventoryResult === 'object') {
+                const inventoryObj = inventoryResult as Record<string, unknown>;
+                const nameEmployee = inventoryObj.name_employee;
+                if (nameEmployee) setPicEmployee(String(nameEmployee));
+              }
+            }
+          }
         }
       } catch (err) {
         console.warn('[transaksi-detail] failed to fetch penyerahan data', err);
@@ -313,6 +328,7 @@ export default function DetailPage() {
     setItemKonfirmasi([]);
     setBuktiPenerimaanImage(null);
     setTglPenyerahan(null);
+    setPicEmployee(null);
     await fetchDetail();
   }, [fetchDetail]);
 
@@ -859,7 +875,7 @@ export default function DetailPage() {
 
           {/* Card Detail Penyerahan Asset - tampil jika tgl_penyerahan tidak null */}
           {tglPenyerahan && (
-            <Card className="mt-4 rounded-md border border-neutral-100 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+            <Card className="sticky top-64 mt-4 rounded-md border border-neutral-100 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
               <CardHeader>
                 <CardTitle className="text-m dark:text-white">
                   Detail Penyerahan Asset
@@ -905,7 +921,7 @@ export default function DetailPage() {
                                   Diajukan: {item.qty || 0}
                                 </p> */}
                                 <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                                  PIC: {item.qty_confirmation || 0}
+                                  PIC: {picEmployee || '-'}
                                 </p>
                                 <p className="text-sm font-medium text-green-600 dark:text-green-400">
                                   Diserahkan: {formatTimestamp(tglPenyerahan)}
@@ -942,10 +958,7 @@ export default function DetailPage() {
                                 {item.nama}
                               </p>
                               <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                                Diajukan: {item.qty || 0}
-                              </p>
-                              <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                                Disetujui: {item.qty_confirmation || 0}
+                                PIC: {picEmployee || '-'}
                               </p>
                               <p className="text-sm font-medium text-green-600 dark:text-green-400">
                                 Diserahkan: {formatTimestamp(tglPenyerahan)}
