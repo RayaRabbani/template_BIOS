@@ -47,7 +47,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import {
   cancelOfficeSuppliesTransaksiRequest,
   getPeminjamanTransaksi,
-  getPenyerahanTransaksi,
   getTransaksiConsumableBySlug,
   getTransaksiConsumableItems,
 } from '@/lib/api/user';
@@ -74,10 +73,7 @@ export default function DetailPage() {
     null
   );
   const [assetImage, setAssetImage] = useState<string | undefined | null>(null);
-  const [penyerahanData, setPenyerahanData] = useState<Record<
-    string,
-    unknown
-  > | null>(null);
+  const [itemKonfirmasi, setItemKonfirmasi] = useState<ItemApi[]>([]);
   const [showPenyerahanModal, setShowPenyerahanModal] = useState(false);
   const [penyerahanImage, setPenyerahanImage] = useState<{
     url: string;
@@ -106,33 +102,8 @@ export default function DetailPage() {
             ]
           : [];
 
-      // Call additional APIs for penyerahan and peminjaman transaksi only if status_konfirmasi is "Dikonfirmasi"
-      let penyerahanInfo = null;
+      // Call additional APIs for peminjaman transaksi only if status_konfirmasi is "Dikonfirmasi"
       if (data.id && data.status_konfirmasi === 'Dikonfirmasi') {
-        try {
-          const penyerahanResponse = await getPenyerahanTransaksi(data.id);
-          console.log('Penyerahan data:', penyerahanResponse);
-          // Store penyerahan data if it has the expected structure
-          if (penyerahanResponse && typeof penyerahanResponse === 'object') {
-            const responseData = (penyerahanResponse as Record<string, unknown>)
-              ?.data;
-            if (Array.isArray(responseData) && responseData.length > 0) {
-              const firstPenyerahan = responseData.find(
-                (item: Record<string, unknown>) => item.status === 'Penyerahan'
-              );
-              if (firstPenyerahan) {
-                penyerahanInfo = firstPenyerahan;
-                setPenyerahanData(firstPenyerahan);
-              }
-            }
-          }
-        } catch (err) {
-          console.warn(
-            '[transaksi-detail] failed to fetch penyerahan data',
-            err
-          );
-        }
-
         try {
           const peminjamanData = await getPeminjamanTransaksi(data.id);
           console.log('Peminjaman data:', peminjamanData);
@@ -181,21 +152,6 @@ export default function DetailPage() {
         });
       }
 
-      // Add penyerahan status if exists
-      if (
-        penyerahanInfo &&
-        (penyerahanInfo as Record<string, unknown>).tgl_penyerahan &&
-        (penyerahanInfo as Record<string, unknown>).name_employee
-      ) {
-        statusHistory.push({
-          status: 'Penyerahan',
-          timestamp: (penyerahanInfo as Record<string, unknown>)
-            .tgl_penyerahan as string,
-          actor: (penyerahanInfo as Record<string, unknown>)
-            .name_employee as string,
-        });
-      }
-
       // Sort status history by timestamp to ensure chronological order
       statusHistory.sort((a, b) => {
         const timeA = new Date(a.timestamp).getTime();
@@ -222,6 +178,45 @@ export default function DetailPage() {
           }
           return [] as ItemApi[];
         })();
+
+        // Extract itemKonfirmasi
+        const itemKonfirmasiData = (() => {
+          const p = payloadItems as unknown;
+          if (p && typeof p === 'object') {
+            const pObj = p as Record<string, unknown>;
+            const d = pObj.data;
+            if (d && typeof d === 'object') {
+              const dObj = d as Record<string, unknown>;
+              const ik =
+                dObj.itemKonfirmasi ??
+                dObj.itemkonfirmasi ??
+                dObj.item_konfirmasi;
+              if (Array.isArray(ik)) return ik;
+            }
+
+            const topIk =
+              pObj.itemKonfirmasi ??
+              pObj.itemkonfirmasi ??
+              pObj.item_konfirmasi;
+            if (Array.isArray(topIk)) return topIk;
+          }
+          return [];
+        })();
+
+        // Set itemKonfirmasi state
+        setItemKonfirmasi(itemKonfirmasiData);
+
+        // Add penyerahan status to history if itemKonfirmasi exists
+        if (itemKonfirmasiData.length > 0) {
+          const firstConfirmedItem = itemKonfirmasiData[0];
+          if (firstConfirmedItem && firstConfirmedItem.updated_at) {
+            statusHistory.push({
+              status: 'Penyerahan',
+              timestamp: firstConfirmedItem.updated_at,
+              actor: firstConfirmedItem.no_badge || 'System',
+            });
+          }
+        }
 
         if (itemResult.length) {
           items = itemResult.map((it: ItemApi) => ({
@@ -271,6 +266,16 @@ export default function DetailPage() {
       };
       setAssetImage(data.gambar ?? data.assetImage ?? null);
       setTransaction(parsed);
+
+      // Set bukti penerimaan image from transaksi.gambar (always prefer this)
+      if (data.gambar) {
+        setPenyerahanImage({
+          url: `https://storage.googleapis.com/pkc_gcp-storage/asset/transaksi/${data.gambar}`,
+          name: `Bukti Penerimaan - ${parsed.transactionNo}`,
+        });
+      } else {
+        setPenyerahanImage(null);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -278,6 +283,7 @@ export default function DetailPage() {
 
   const refreshData = useCallback(async () => {
     setHasItemConfirmationInProcess(false);
+    setItemKonfirmasi([]);
     await fetchDetail();
   }, [fetchDetail]);
 
@@ -581,36 +587,27 @@ export default function DetailPage() {
                     )}
                 </div>
 
-                {penyerahanData && (
+                {itemKonfirmasi.length > 0 && (
                   <div className="mt-6">
                     <Button
                       className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-blue-600 text-white hover:bg-blue-700"
                       onClick={() => {
-                        if (
-                          penyerahanData &&
-                          typeof penyerahanData === 'object'
-                        ) {
-                          const gambarInventory = (
-                            penyerahanData as Record<string, unknown>
-                          ).gambarinventory;
-                          const namaAsset = (
-                            penyerahanData as Record<string, unknown>
-                          ).nama;
-                          if (
-                            Array.isArray(gambarInventory) &&
-                            gambarInventory.length > 0
-                          ) {
-                            const firstImage = gambarInventory[0] as Record<
-                              string,
-                              unknown
-                            >;
-                            if (firstImage && firstImage.gambar) {
-                              setPenyerahanImage({
-                                url: `https://storage.googleapis.com/pkc_gcp-storage/asset/kategori/${firstImage.gambar}`,
-                                name: String(namaAsset || firstImage.gambar),
-                              });
-                              setShowPenyerahanModal(true);
-                            }
+                        // prefer penyerahanImage from transaksi.gambar, fallback to itemKonfirmasi.pic
+                        if (penyerahanImage) {
+                          setShowPenyerahanModal(true);
+                          return;
+                        }
+
+                        if (itemKonfirmasi.length > 0) {
+                          const firstItem = itemKonfirmasi[0];
+                          const pic = firstItem.pic;
+                          const nama = firstItem.nama;
+                          if (pic) {
+                            setPenyerahanImage({
+                              url: `https://storage.googleapis.com/pkc_gcp-storage/asset/asset/${pic}`,
+                              name: String(nama || pic),
+                            });
+                            setShowPenyerahanModal(true);
                           }
                         }
                       }}
@@ -629,149 +626,124 @@ export default function DetailPage() {
           <Card className="sticky top-2 rounded-md border border-neutral-100 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
             <CardHeader>
               <CardTitle className="text-m dark:text-white">
-                {penyerahanData
+                {itemKonfirmasi.length > 0
                   ? 'Detail Penyerahan Asset'
                   : 'Detail Permintaan Asset'}
               </CardTitle>
               <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-                {penyerahanData
+                {itemKonfirmasi.length > 0
                   ? 'Berikut Detail Penyerahan Asset'
                   : 'Berikut Detail Permintaan Asset'}
               </p>
             </CardHeader>
 
             <CardContent>
-              {penyerahanData ? (
-                (() => {
-                  const penyerahanItems = Array.isArray(
-                    (penyerahanData as Record<string, unknown>).data
-                  )
-                    ? ((penyerahanData as Record<string, unknown>)
-                        .data as Record<string, unknown>[])
-                    : [penyerahanData as Record<string, unknown>];
+              {itemKonfirmasi.length > 0 ? (
+                <div>
+                  <p className="text-m mb-2 text-neutral-700 dark:text-neutral-300">
+                    Asset Yang Diserahkan
+                  </p>
 
-                  return (
-                    <div>
-                      <p className="text-m mb-2 text-neutral-700 dark:text-neutral-300">
-                        Asset Yang Diserahkan
-                      </p>
+                  {itemKonfirmasi.length > 2 ? (
+                    <ScrollArea className="mt-2 h-54 max-h-54">
+                      <div className="space-y-4">
+                        {itemKonfirmasi.map((item, i) => {
+                          const imageUrl = item.pic
+                            ? `https://storage.googleapis.com/pkc_gcp-storage/asset/asset/${item.pic}`
+                            : (assetImage ?? '');
 
-                      {penyerahanItems.length > 2 ? (
-                        <ScrollArea className="mt-2 h-54 max-h-54">
-                          <div className="space-y-4">
-                            {penyerahanItems.map((item, i) => {
-                              const gambarInventory = Array.isArray(
-                                item.gambarinventory
-                              )
-                                ? (item.gambarinventory as Record<
-                                    string,
-                                    unknown
-                                  >[])
-                                : [];
-                              const imageUrl = gambarInventory[0]?.gambar
-                                ? `https://storage.googleapis.com/pkc_gcp-storage/asset/kategori/${gambarInventory[0].gambar}`
-                                : (assetImage ?? '');
-
-                              return (
-                                <div
-                                  key={i}
-                                  className="flex items-center gap-4 rounded-md border border-neutral-100 p-3 shadow-sm dark:border-neutral-700"
-                                >
-                                  <Image
-                                    src={imageUrl}
-                                    width={70}
-                                    height={70}
-                                    alt={(item.nama as string) ?? 'asset'}
-                                    className="cursor-zoom-in rounded-md object-cover transition hover:opacity-80"
-                                    onClick={() => setPreviewImage(imageUrl)}
-                                  />
-                                  <div>
-                                    <p className="text-m dark:text-white">
-                                      {item.nama as string}
-                                    </p>
-                                    <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                                      Diserahkan: 1
-                                    </p>
-                                    <p className="mt-1 text-xs text-blue-600 dark:text-blue-400">
-                                      Diterima oleh:{' '}
-                                      {item.name_employee as string}
-                                    </p>
-                                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                                      {item.tgl_penyerahan
-                                        ? format(
-                                            parseISO(
-                                              item.tgl_penyerahan as string
-                                            ),
-                                            'd MMMM yyyy - HH:mm',
-                                            { locale: idLocale }
-                                          )
-                                        : '-'}
-                                    </p>
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </ScrollArea>
-                      ) : (
-                        <div className="mt-2 space-y-4">
-                          {penyerahanItems.map((item, i) => {
-                            const gambarInventory = Array.isArray(
-                              item.gambarinventory
-                            )
-                              ? (item.gambarinventory as Record<
-                                  string,
-                                  unknown
-                                >[])
-                              : [];
-                            const imageUrl = gambarInventory[0]?.gambar
-                              ? `https://storage.googleapis.com/pkc_gcp-storage/asset/kategori/${gambarInventory[0].gambar}`
-                              : (assetImage ?? '');
-
-                            return (
-                              <div
-                                key={i}
-                                className="flex items-center gap-4 rounded-md border border-neutral-100 p-3 shadow-sm dark:border-neutral-700"
-                              >
-                                <Image
-                                  src={imageUrl}
-                                  width={70}
-                                  height={70}
-                                  alt={(item.nama as string) ?? 'asset'}
-                                  className="cursor-zoom-in rounded-md object-cover transition hover:opacity-80"
-                                  onClick={() => setPreviewImage(imageUrl)}
-                                />
-                                <div className="min-w-0 flex-1">
-                                  <p className="text-sm leading-tight font-medium break-words dark:text-white">
-                                    {item.nama as string}
-                                  </p>
-                                  <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                                    Diserahkan: 1
-                                  </p>
-                                  <p className="mt-1 text-xs text-blue-600 dark:text-blue-400">
-                                    Diterima oleh:{' '}
-                                    {item.name_employee as string}
-                                  </p>
-                                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                                    {item.tgl_penyerahan
-                                      ? format(
-                                          parseISO(
-                                            item.tgl_penyerahan as string
-                                          ),
-                                          'd MMMM yyyy - HH:mm',
-                                          { locale: idLocale }
-                                        )
-                                      : '-'}
-                                  </p>
-                                </div>
+                          return (
+                            <div
+                              key={i}
+                              className="flex items-center gap-4 rounded-md border border-neutral-100 p-3 shadow-sm dark:border-neutral-700"
+                            >
+                              <Image
+                                src={imageUrl}
+                                width={70}
+                                height={70}
+                                alt={item.nama ?? 'asset'}
+                                unoptimized={true}
+                                className="cursor-zoom-in rounded-md object-cover transition hover:opacity-80"
+                                onClick={() => setPreviewImage(imageUrl)}
+                              />
+                              <div>
+                                <p className="text-m dark:text-white">
+                                  {item.nama}
+                                </p>
+                                <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                                  Diajukan: {item.qty || 0}
+                                </p>
+                                <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                                  Disetujui: {item.qty_confirmation || 0}
+                                </p>
+                                {/* <p className="mt-1 text-xs text-blue-600 dark:text-blue-400">
+                                  Badge: {item.no_badge}
+                                </p>
+                                <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                                  {item.updated_at
+                                    ? format(
+                                        parseISO(item.updated_at),
+                                        'd MMMM yyyy - HH:mm',
+                                        { locale: idLocale }
+                                      )
+                                    : '-'}
+                                </p> */}
                               </div>
-                            );
-                          })}
-                        </div>
-                      )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </ScrollArea>
+                  ) : (
+                    <div className="mt-2 space-y-4">
+                      {itemKonfirmasi.map((item, i) => {
+                        const imageUrl = item.pic
+                          ? `https://storage.googleapis.com/pkc_gcp-storage/asset/asset/${item.pic}`
+                          : (assetImage ?? '');
+
+                        return (
+                          <div
+                            key={i}
+                            className="flex items-center gap-4 rounded-md border border-neutral-100 p-3 shadow-sm dark:border-neutral-700"
+                          >
+                            <Image
+                              src={imageUrl}
+                              width={70}
+                              height={70}
+                              alt={item.nama ?? 'asset'}
+                              unoptimized={true}
+                              className="cursor-zoom-in rounded-md object-cover transition hover:opacity-80"
+                              onClick={() => setPreviewImage(imageUrl)}
+                            />
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm leading-tight font-medium break-words dark:text-white">
+                                {item.nama}
+                              </p>
+                              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                                Diajukan: {item.qty || 0}
+                              </p>
+                              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                                Disetujui: {item.qty_confirmation || 0}
+                              </p>
+                              {/* <p className="mt-1 text-xs text-blue-600 dark:text-blue-400">
+                                Badge: {item.no_badge}
+                              </p>
+                              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                                {item.updated_at
+                                  ? format(
+                                      parseISO(item.updated_at),
+                                      'd MMMM yyyy - HH:mm',
+                                      { locale: idLocale }
+                                    )
+                                  : '-'}
+                              </p> */}
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                  );
-                })()
+                  )}
+                </div>
               ) : (
                 <div>
                   <p className="text-m text-neutral-700 dark:text-neutral-300">
@@ -791,6 +763,7 @@ export default function DetailPage() {
                               width={70}
                               height={70}
                               alt={item.name ?? 'asset'}
+                              unoptimized={true}
                               className="cursor-zoom-in rounded-md object-cover transition hover:opacity-80"
                               onClick={() =>
                                 setPreviewImage(item.image ?? assetImage ?? '')
@@ -820,6 +793,7 @@ export default function DetailPage() {
                             width={70}
                             height={70}
                             alt={item.name ?? 'asset'}
+                            unoptimized={true}
                             className="cursor-zoom-in rounded-md object-cover transition hover:opacity-80"
                             onClick={() =>
                               setPreviewImage(item.image ?? assetImage ?? '')
@@ -853,6 +827,7 @@ export default function DetailPage() {
               src={previewImage}
               alt="Preview"
               fill
+              unoptimized={true}
               className="cursor-zoom-out object-contain"
               onClick={() => setPreviewImage(null)}
             />
@@ -873,6 +848,7 @@ export default function DetailPage() {
                 src={penyerahanImage.url}
                 alt={penyerahanImage.name}
                 fill
+                unoptimized={true}
                 className="object-contain"
               />
             </div>
