@@ -84,6 +84,7 @@ export default function ConfirmModal({
     nama: string;
     pic: string;
   } | null>(null);
+  const [sessionOrgAliases, setSessionOrgAliases] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: session } = useSession();
 
@@ -130,7 +131,6 @@ export default function ConfirmModal({
 
     const fetchEmployeeData = async () => {
       if (!open) return;
-
       try {
         const emp = await getEmployeeById(session?.user?.id || '0');
         if (emp) {
@@ -140,6 +140,7 @@ export default function ConfirmModal({
             nama: emp.name || '',
             pic: emp.pic || '',
           });
+          setSessionOrgAliases(emp.organization?.aliases || []);
         }
       } catch (err) {
         console.warn('Failed to fetch employee from demplon:', err);
@@ -151,14 +152,12 @@ export default function ConfirmModal({
 
   const approvers = useMemo(() => {
     if (!employees.length) return [];
-
-    const sessionOrgAliases = ['C001370000', '50063620', 'ti', 'tik'];
+    if (!sessionOrgAliases.length) return [];
 
     const filtered = employees.filter(emp => {
       const hasMatchingOrg = emp.organization?.aliases?.some(alias =>
         sessionOrgAliases.includes(alias)
       );
-
       return hasMatchingOrg;
     });
 
@@ -170,7 +169,7 @@ export default function ConfirmModal({
         avatar: emp.pic || undefined,
       })
     );
-  }, [employees]);
+  }, [employees, sessionOrgAliases]);
 
   const form = useForm<{
     tanggalPermintaan?: string;
@@ -383,7 +382,7 @@ export default function ConfirmModal({
                           <AvatarImage
                             src={selectedApprover.avatar}
                             alt={selectedApprover.name ?? 'avatar'}
-                            className="object-cover object-top w-full h-full"
+                            className="h-full w-full object-cover object-top"
                           />
                           <AvatarFallback>
                             {selectedApprover?.name

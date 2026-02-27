@@ -291,76 +291,67 @@ export default function ConfirmModal({
 
     const fetchLeader = async () => {
       try {
-        try {
-          const emp = await getEmployeeById(session?.user?.id || '0');
-          if (emp) {
-            const orgLeader = emp?.organization?.leader ?? null;
-            const parentLeader = emp?.organization?.parent?.leader ?? null;
+        const emp = await getEmployeeById(session?.user?.id || '0');
+        if (emp) {
+          const orgLeader = emp?.organization?.leader ?? null;
+          const approver = orgLeader;
 
-            // Prefer parent.leader when available (e.g., Rubby in parent)
-            const approver = parentLeader ? parentLeader : orgLeader;
-
-            if (approver) {
-              const idVal =
-                approver.id ?? approver?.nip ?? approver?.no_badge ?? null;
-              setLeaderBadge(idVal ? String(idVal) : null);
-              setLeaderName(approver.name ?? null);
-              setLeaderPic(approver.pic ?? null);
-            }
-
-            setEmployeeData({
-              kode_unit: emp.organization?.id
-                ? String(emp.organization.id)
-                : '',
-              no_badge: emp.id ? String(emp.id) : '',
-              nama: emp.name || '',
-              pic: emp.pic || '',
-            });
-          }
-        } catch (err) {
-          console.warn('Failed to fetch employee from demplon:', err);
-        }
-
-        if (isPermintaan) {
-          try {
-            const unitResp = await getUnits();
-            if (Array.isArray(unitResp?.data))
-              setUnits(unitResp.data as Array<Record<string, unknown>>);
-          } catch (err) {
-            console.warn('Failed to fetch units:', err);
+          if (approver) {
+            const idVal =
+              approver.id ?? approver?.nip ?? approver?.no_badge ?? null;
+            setLeaderBadge(idVal ? String(idVal) : null);
+            setLeaderName(approver.name ?? null);
+            setLeaderPic(approver.pic ?? null);
           }
 
-          try {
-            const lokasiResp = await getLokasiByUnit('C001370000');
-            const lokasiData = lokasiResp?.data;
-            if (Array.isArray(lokasiData) && lokasiData.length > 0) {
-              const mapped = lokasiData.map((it: LokasiApiItem) => ({
-                id: it.id ?? it.qrcode ?? String(it.id_unit ?? ''),
-                lokasi: it.lokasi ?? it.area ?? String(it.id ?? ''),
-                area: it.area,
-                id_unit: it.id_unit,
-                unitkerja: it.unitkerja
-                  ? { name: it.unitkerja.name, leader: it.unitkerja.leader }
-                  : undefined,
-              }));
-              setLokasiOptions(mapped);
-
-              const first = mapped[0];
-
-              const leaderFromLokasi = mapped[0]?.unitkerja?.leader;
-              if (
-                typeof leaderFromLokasi === 'string' ||
-                typeof leaderFromLokasi === 'number'
-              ) {
-                setLeaderBadge(String(leaderFromLokasi));
-              }
-            }
-          } catch (err) {
-            console.warn('Failed to fetch lokasi by unit:', err);
-          }
+          setEmployeeData({
+            kode_unit: emp.organization?.id ? String(emp.organization.id) : '',
+            no_badge: emp.id ? String(emp.id) : '',
+            nama: emp.name || '',
+            pic: emp.pic || '',
+          });
         }
       } catch (err) {
-        console.error('Failed to fetch leader data:', err);
+        console.warn('Failed to fetch employee from demplon:', err);
+      }
+
+      if (isPermintaan) {
+        try {
+          const unitResp = await getUnits();
+          if (Array.isArray(unitResp?.data))
+            setUnits(unitResp.data as Array<Record<string, unknown>>);
+        } catch (err) {
+          console.warn('Failed to fetch units:', err);
+        }
+
+        try {
+          const lokasiResp = await getLokasiByUnit('C001370000');
+          const lokasiData = lokasiResp?.data;
+          if (Array.isArray(lokasiData) && lokasiData.length > 0) {
+            const mapped = lokasiData.map((it: LokasiApiItem) => ({
+              id: it.id ?? it.qrcode ?? String(it.id_unit ?? ''),
+              lokasi: it.lokasi ?? it.area ?? String(it.id ?? ''),
+              area: it.area,
+              id_unit: it.id_unit,
+              unitkerja: it.unitkerja
+                ? { name: it.unitkerja.name, leader: it.unitkerja.leader }
+                : undefined,
+            }));
+            setLokasiOptions(mapped);
+
+            const first = mapped[0];
+
+            const leaderFromLokasi = mapped[0]?.unitkerja?.leader;
+            if (
+              typeof leaderFromLokasi === 'string' ||
+              typeof leaderFromLokasi === 'number'
+            ) {
+              setLeaderBadge(String(leaderFromLokasi));
+            }
+          }
+        } catch (err) {
+          console.warn('Failed to fetch lokasi by unit:', err);
+        }
       }
     };
 
