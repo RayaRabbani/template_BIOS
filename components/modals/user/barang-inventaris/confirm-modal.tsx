@@ -293,8 +293,14 @@ export default function ConfirmModal({
       try {
         const emp = await getEmployeeById(session?.user?.id || '0');
         if (emp) {
-          const orgLeader = emp?.organization?.leader ?? null;
-          const approver = orgLeader;
+          let approver = null;
+          if (Array.isArray(emp.leaders) && emp.leaders.length > 0) {
+            // Jika leaders ada, ambil leader dari parent organization
+            approver = emp.organization?.parent?.leader ?? null;
+          } else {
+            // Jika leaders kosong, ambil leader dari organization
+            approver = emp.organization?.leader ?? null;
+          }
 
           if (approver) {
             const idVal =
