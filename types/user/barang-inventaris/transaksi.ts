@@ -1,13 +1,15 @@
 export type HistoryItem = {
   id: number;
-  type: "peminjaman" | "permintaan";
+  type: 'peminjaman' | 'permintaan';
   transactionNo: string;
   slug?: string | null;
   date: string;
   employee: string;
-  status: "pending" | "approved" | "rejected" | "completed";
+  status: 'pending' | 'approved' | 'rejected' | 'completed';
   confirmationStatus?: string | null;
-  returnDate?: string;
+  status_konfirmasi?: string | null;
+  tgl_penyerahan?: string | null;
+  returnDate?: string | null;
   assetName?: string;
   assetImage?: string;
   pic?: string;
@@ -135,6 +137,8 @@ export type TransactionDetail = {
   employeePic?: string;
   note?: string;
   items: Item[];
-  type?: "peminjaman" | "permintaan";
+  type?: 'peminjaman' | 'permintaan';
   statusHistory: StatusHistory[];
+  status_konfirmasi?: string | null;
+  tgl_penyerahan?: string | null;
 };

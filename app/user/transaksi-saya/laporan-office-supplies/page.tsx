@@ -208,6 +208,8 @@ export default function HistoryPage() {
               pic: it.pic ?? null,
               status,
               confirmationStatus: it.status_konfirmasi ?? null,
+              status_konfirmasi: it.status_konfirmasi ?? null,
+              tgl_penyerahan: it.tgl_penyerahan ?? null,
               returnDate: it.tgl_pengembalian ?? null,
               itemResult: it.itemResult ?? [],
             } as HistoryItem;
@@ -870,6 +872,17 @@ export default function HistoryPage() {
                                       .toString()
                                       .toLowerCase();
                                     if (
+                                      (item.status_konfirmasi?.toLowerCase() ===
+                                        'dikonfirmasi' ||
+                                        item.status_konfirmasi?.toLowerCase() ===
+                                          'disetujui') &&
+                                      !item.tgl_penyerahan &&
+                                      item.status !== 'rejected'
+                                    ) {
+                                      return 'Dikonfirmasi';
+                                    }
+
+                                    if (
                                       s.includes('rejected') ||
                                       s.includes('ditolak')
                                     )
@@ -901,6 +914,18 @@ export default function HistoryPage() {
                                       <span>
                                         Menunggu konfirmasi kompilator
                                       </span>
+                                    </div>
+                                  )}
+
+                                {(item.status_konfirmasi?.toLowerCase() ===
+                                  'dikonfirmasi' ||
+                                  item.status_konfirmasi?.toLowerCase() ===
+                                    'disetujui') &&
+                                  !item.tgl_penyerahan &&
+                                  item.status !== 'rejected' && (
+                                    <div className="mt-1 flex items-center gap-2 text-xs text-blue-600 dark:text-blue-400">
+                                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                      <span>Menunggu Pengambilan Asset</span>
                                     </div>
                                   )}
                               </div>
@@ -993,13 +1018,26 @@ export default function HistoryPage() {
                             : {}
                         }
                       >
-                        {item.status === 'rejected'
-                          ? 'Dibatalkan'
-                          : item.status === 'completed'
-                            ? 'Selesai'
-                            : item.status === 'approved'
-                              ? 'Disetujui'
-                              : 'Menunggu'}
+                        {(() => {
+                          if (
+                            (item.status_konfirmasi?.toLowerCase() ===
+                              'dikonfirmasi' ||
+                              item.status_konfirmasi?.toLowerCase() ===
+                                'disetujui') &&
+                            !item.tgl_penyerahan &&
+                            item.status !== 'rejected'
+                          ) {
+                            return 'Dikonfirmasi';
+                          }
+
+                          return item.status === 'rejected'
+                            ? 'Dibatalkan'
+                            : item.status === 'completed'
+                              ? 'Selesai'
+                              : item.status === 'approved'
+                                ? 'Disetujui'
+                                : 'Menunggu';
+                        })()}
                       </span>
                     )}
                   </div>
@@ -1011,6 +1049,16 @@ export default function HistoryPage() {
                       <div className="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
                         <Loader2 className="h-3 w-3 animate-spin" />
                         <span>Menunggu konfirmasi kompilator</span>
+                      </div>
+                    )}
+
+                  {(item.status_konfirmasi?.toLowerCase() === 'dikonfirmasi' ||
+                    item.status_konfirmasi?.toLowerCase() === 'disetujui') &&
+                    !item.tgl_penyerahan &&
+                    item.status !== 'rejected' && (
+                      <div className="flex items-center gap-2 text-xs text-blue-600 dark:text-blue-400">
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        <span>Menunggu Pengambilan Asset</span>
                       </div>
                     )}
 

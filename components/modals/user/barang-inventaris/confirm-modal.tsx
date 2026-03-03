@@ -84,6 +84,7 @@ export default function ConfirmModal({
   const [tanggalPermintaanOpen, setTanggalPermintaanOpen] = useState(false);
 
   const [lokasi, setLokasi] = useState('');
+  const [lokasiSearch, setLokasiSearch] = useState('');
   const [unitKerja, setUnitKerja] = useState('');
   const [lokasiOptions, setLokasiOptions] = useState<LokasiApiItem[]>([]);
   const [leaderBadge, setLeaderBadge] = useState<string | null>(null);
@@ -294,7 +295,7 @@ export default function ConfirmModal({
         const emp = await getEmployeeById(session?.user?.id || '0');
         if (emp) {
           let approver = null;
-          if (Array.isArray(emp.leaders) && emp.leaders.length > 0) {            
+          if (Array.isArray(emp.leaders) && emp.leaders.length > 0) {
             approver = emp.organization?.parent?.leader ?? null;
           } else {
             approver = emp.organization?.leader ?? null;
@@ -724,12 +725,55 @@ export default function ConfirmModal({
                           <SelectValue placeholder="Pilih lokasi penempatan" />
                         </SelectTrigger>
 
-                        <SelectContent className="rounded-md">
-                          {lokasiOptions.map(loc => (
-                            <SelectItem key={loc.id} value={String(loc.id)}>
-                              {loc.lokasi}
-                            </SelectItem>
-                          ))}
+                        <SelectContent
+                          position="popper"
+                          sideOffset={5}
+                          className="w-[var(--radix-select-trigger-width)] overflow-hidden rounded-md border border-neutral-200 bg-white shadow-md dark:border-neutral-700 dark:bg-neutral-900"
+                        >
+                          <div className="bg-white px-2 py-2 dark:bg-neutral-900">
+                            <input
+                              type="text"
+                              placeholder="Cari lokasi..."
+                              autoFocus
+                              className="w-full rounded-md border border-neutral-200 bg-neutral-50 px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-emerald-500 dark:border-neutral-700 dark:bg-neutral-800"
+                              value={lokasiSearch}
+                              onChange={e => setLokasiSearch(e.target.value)}
+                              onPointerDown={e => e.stopPropagation()}
+                              onKeyDown={e => {
+                                if (e.key !== 'Escape') {
+                                  e.stopPropagation();
+                                }
+                                if (e.key === 'Enter') e.preventDefault();
+                              }}
+                            />
+                          </div>
+                          <ScrollArea className="flex max-h-60 flex-col overflow-y-auto">
+                            <div className="p-1">
+                              {lokasiOptions
+                                .filter(loc =>
+                                  (loc.lokasi ?? '')
+                                    .toLowerCase()
+                                    .includes(lokasiSearch.toLowerCase())
+                                )
+                                .map(loc => (
+                                  <SelectItem
+                                    key={loc.id}
+                                    value={String(loc.id)}
+                                  >
+                                    {loc.lokasi}
+                                  </SelectItem>
+                                ))}
+                              {lokasiOptions.filter(loc =>
+                                (loc.lokasi ?? '')
+                                  .toLowerCase()
+                                  .includes(lokasiSearch.toLowerCase())
+                              ).length === 0 && (
+                                <div className="px-2 py-3 text-center text-xs text-neutral-500">
+                                  Lokasi tidak ditemukan
+                                </div>
+                              )}
+                            </div>
+                          </ScrollArea>
                         </SelectContent>
                       </Select>
                       {errors.lokasi && (

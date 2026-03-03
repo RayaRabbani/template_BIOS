@@ -1,5 +1,6 @@
 export type UIAsset = {
   id: number | string;
+  kategori_id?: number;
   name?: string;
   desc?: string;
   image?: string | null;
@@ -99,9 +100,9 @@ export type DetailApprovalData = {
   tgl_permintaan?: string | null;
   requestDate?: string;
   approveDate?: string;
-  returnDate?: string;
-  status: "pending" | "approved" | "rejected" | "completed" | "cancelled";
-  variant?: "default" | "success" | "danger";
+  returnDate?: string | null;
+  status: 'pending' | 'approved' | 'rejected' | 'completed' | 'cancelled';
+  variant?: 'default' | 'success' | 'danger';
   approverName?: string;
   approverNip?: string;
   approverAvatar?: string | null;

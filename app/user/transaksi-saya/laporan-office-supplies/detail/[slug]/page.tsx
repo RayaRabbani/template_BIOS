@@ -11,6 +11,7 @@ import {
   ArrowLeft,
   CheckCircle,
   Clock3,
+  FileCheck,
   FileText,
   HandHeart,
   HourglassIcon,
@@ -102,7 +103,6 @@ export default function DetailPage() {
             ]
           : [];
 
-      // Call additional APIs for peminjaman transaksi only if status_konfirmasi is "Dikonfirmasi"
       if (data.id && data.status_konfirmasi === 'Dikonfirmasi') {
         try {
           const peminjamanData = await getPeminjamanTransaksi(data.id);
@@ -152,7 +152,6 @@ export default function DetailPage() {
         });
       }
 
-      // Sort status history by timestamp to ensure chronological order
       statusHistory.sort((a, b) => {
         const timeA = new Date(a.timestamp).getTime();
         const timeB = new Date(b.timestamp).getTime();
@@ -178,8 +177,7 @@ export default function DetailPage() {
           }
           return [] as ItemApi[];
         })();
-
-        // Extract itemKonfirmasi
+        
         const itemKonfirmasiData = (() => {
           const p = payloadItems as unknown;
           if (p && typeof p === 'object') {
@@ -203,11 +201,9 @@ export default function DetailPage() {
           return [];
         })();
 
-        // Set itemKonfirmasi state
         setItemKonfirmasi(itemKonfirmasiData);
 
-        // Add penyerahan status to history if itemKonfirmasi exists
-        if (itemKonfirmasiData.length > 0) {
+        if (itemKonfirmasiData.length > 0 && data.tgl_penyerahan) {
           const firstConfirmedItem = itemKonfirmasiData[0];
           if (firstConfirmedItem && firstConfirmedItem.updated_at) {
             statusHistory.push({
@@ -263,14 +259,20 @@ export default function DetailPage() {
         statusHistory,
         id: data.id,
         status: data.status ?? null,
+        status_konfirmasi: data.status_konfirmasi ?? null,
+        tgl_penyerahan: data.tgl_penyerahan ?? null,
       };
-      setAssetImage(data.gambar ?? data.assetImage ?? null);
+      const rawAssetImg = data.gambar ?? data.assetImage ?? null;
+      setAssetImage(
+        rawAssetImg && rawAssetImg.lastIndexOf('https://') > 0
+          ? rawAssetImg.substring(rawAssetImg.lastIndexOf('https://'))
+          : rawAssetImg
+      );
       setTransaction(parsed);
 
-      // Set bukti penerimaan image from transaksi.gambar (always prefer this)
       if (data.gambar) {
         setPenyerahanImage({
-          url: `https://storage.googleapis.com/pkc_gcp-storage/asset/transaksi/${data.gambar}`,
+          url: resolveAssetImage(data.gambar, 'transaksi') ?? '',
           name: `Bukti Penerimaan - ${parsed.transactionNo}`,
         });
       } else {
@@ -467,31 +469,39 @@ export default function DetailPage() {
                   <div className="absolute top-0 bottom-8 left-6 w-0.5 bg-gradient-to-b from-blue-500 via-neutral-400 to-green-500 dark:from-blue-400 dark:via-neutral-700 dark:to-green-400" />
 
                   {transaction.statusHistory.map((s, i) => {
-                    const color =
-                      s.status === 'Diajukan'
-                        ? 'bg-blue-600'
-                        : s.status === 'Pending'
-                          ? 'bg-yellow-500'
-                          : s.status === 'Disetujui'
-                            ? ''
-                            : s.status === 'Penyerahan'
+                    const key = (s.status || '').toString().toLowerCase();
+
+                    const color = key.includes('diajukan')
+                      ? 'bg-blue-600'
+                      : key.includes('pending')
+                        ? 'bg-yellow-500'
+                        : key.includes('disetujui')
+                          ? ''
+                          : key.includes('pengambilan')
+                            ? 'bg-blue-600'
+                            : key.includes('penyerahan')
                               ? 'bg-orange-500'
-                              : s.status === 'Selesai'
+                              : key.includes('selesai') ||
+                                  key.includes('completed')
                                 ? 'bg-slate-600'
                                 : 'bg-red-600';
 
-                    const Icon =
-                      s.status === 'Diajukan'
-                        ? Mail
-                        : s.status === 'Pending'
-                          ? Clock3
-                          : s.status === 'Disetujui'
-                            ? CheckCircle
-                            : s.status === 'Penyerahan'
-                              ? HandHeart
-                              : s.status === 'Selesai'
-                                ? MailCheck
-                                : XCircle;
+                    const Icon = key.includes('diajukan')
+                      ? Mail
+                      : key.includes('pending')
+                        ? Clock3
+                        : key.includes('disetujui')
+                          ? CheckCircle
+                          : key.includes('konfirmasi')
+                            ? FileCheck
+                            : key.includes('pengambilan')
+                              ? HourglassIcon
+                              : key.includes('penyerahan')
+                                ? HandHeart
+                                : key.includes('selesai') ||
+                                    key.includes('completed')
+                                  ? MailCheck
+                                  : XCircle;
 
                     return (
                       <div
@@ -505,7 +515,10 @@ export default function DetailPage() {
                             left: '15px',
                             transform: 'translateX(-25%)',
                             backgroundColor:
-                              s.status === 'Disetujui' ? '#01793b' : undefined,
+                              key.includes('disetujui') ||
+                              key.includes('konfirmasi')
+                                ? '#01793b'
+                                : undefined,
                           }}
                         >
                           <Icon size={22} color="white" />
@@ -526,6 +539,9 @@ export default function DetailPage() {
                                 return 'Pending menunggu Approval';
                               if (key.includes('penyerahan'))
                                 return `Diterima oleh ${s.actor}`;
+                              if (key.includes('pengambilan')) {
+                                return `Menunggu Pengambilan Asset`;
+                              }
                               return `${s.status} oleh ${s.actor}`;
                             })()}
                           </p>
@@ -585,6 +601,54 @@ export default function DetailPage() {
                         </div>
                       </div>
                     )}
+
+                  {transaction?.status_konfirmasi === 'Dikonfirmasi' &&
+                    transaction?.tgl_penyerahan === null &&
+                    !(transaction?.status ?? '')
+                      .toString()
+                      .toLowerCase()
+                      .includes('batal') && (
+                      <div className="relative mb-6 flex items-start gap-4">
+                        <div
+                          className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-600 shadow-sm ring-2 ring-white/40 dark:ring-neutral-800/40"
+                          style={{
+                            position: 'absolute',
+                            left: '15px',
+                            transform: 'translateX(-25%)',
+                          }}
+                        >
+                          <HourglassIcon className="h-6 w-6 animate-spin text-white" />
+                        </div>
+
+                        <div className="ml-14 rounded-md border border-neutral-100 bg-white p-4 shadow-sm dark:border-neutral-700">
+                          <p className="font-semibold text-neutral-900 dark:text-neutral-100">
+                            Menunggu Pengambilan Asset
+                          </p>
+
+                          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                            Permintaan telah disetujui, Silahkan ambil asset
+                            anda.
+                          </p>
+
+                          <div className="mt-3">
+                            <Button
+                              className="w-full cursor-pointer bg-red-600 text-white hover:bg-red-500"
+                              disabled={cancelLoading}
+                              onClick={() => {
+                                if (!transaction?.id) return;
+                                setShowCancelDialog(true);
+                              }}
+                            >
+                              Batalkan{' '}
+                              {transaction?.type === 'permintaan'
+                                ? 'Permintaan'
+                                : 'Peminjaman'}{' '}
+                              Asset
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                 </div>
 
                 {itemKonfirmasi.length > 0 && (
@@ -592,7 +656,6 @@ export default function DetailPage() {
                     <Button
                       className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-blue-600 text-white hover:bg-blue-700"
                       onClick={() => {
-                        // prefer penyerahanImage from transaksi.gambar, fallback to itemKonfirmasi.pic
                         if (penyerahanImage) {
                           setShowPenyerahanModal(true);
                           return;
@@ -604,7 +667,7 @@ export default function DetailPage() {
                           const nama = firstItem.nama;
                           if (pic) {
                             setPenyerahanImage({
-                              url: `https://storage.googleapis.com/pkc_gcp-storage/asset/asset/${pic}`,
+                              url: resolveAssetImage(pic, 'transaksi') ?? '',
                               name: String(nama || pic),
                             });
                             setShowPenyerahanModal(true);
@@ -649,7 +712,9 @@ export default function DetailPage() {
                       <div className="space-y-4">
                         {itemKonfirmasi.map((item, i) => {
                           const imageUrl = item.pic
-                            ? `https://storage.googleapis.com/pkc_gcp-storage/asset/asset/${item.pic}`
+                            ? (resolveAssetImage(item.pic, 'asset') ??
+                              assetImage ??
+                              '')
                             : (assetImage ?? '');
 
                           return (
@@ -698,7 +763,9 @@ export default function DetailPage() {
                     <div className="mt-2 space-y-4">
                       {itemKonfirmasi.map((item, i) => {
                         const imageUrl = item.pic
-                          ? `https://storage.googleapis.com/pkc_gcp-storage/asset/asset/${item.pic}`
+                          ? (resolveAssetImage(item.pic, 'asset') ??
+                            assetImage ??
+                            '')
                           : (assetImage ?? '');
 
                         return (

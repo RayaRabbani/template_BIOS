@@ -110,7 +110,6 @@ export default function DetailPage() {
             ]
           : [];
 
-      // Call additional APIs for peminjaman transaksi only if status_konfirmasi is "Dikonfirmasi"
       if (data.id && data.status_konfirmasi === 'Dikonfirmasi') {
         try {
           const peminjamanData = await getPeminjamanTransaksi(data.id);
@@ -148,6 +147,18 @@ export default function DetailPage() {
           actor: data.nama_konfirmasi ?? 'System',
         });
       }
+
+      // Add "Menunggu Pengambilan Asset" status if status_konfirmasi is "Dikonfirmasi" and tgl_penyerahan is null
+      // if (
+      //   data.status_konfirmasi === 'Dikonfirmasi' &&
+      //   data.tgl_penyerahan === null
+      // ) {
+      //   statusHistory.push({
+      //     status: 'Menunggu Pengambilan Asset',
+      //     timestamp: data.konfirmasi_at || data.updated_at || new Date().toISOString(),
+      //     actor: 'System',
+      //   });
+      // }
 
       if (
         data.updated_at &&
@@ -211,11 +222,9 @@ export default function DetailPage() {
           return [];
         })();
 
-        // Set itemKonfirmasi state
         setItemKonfirmasi(itemKonfirmasiData);
 
-        // Add penyerahan status to history if itemKonfirmasi exists
-        if (itemKonfirmasiData.length > 0) {
+        if (itemKonfirmasiData.length > 0 && data.tgl_penyerahan) {
           const firstConfirmedItem = itemKonfirmasiData[0];
           if (firstConfirmedItem && firstConfirmedItem.updated_at) {
             statusHistory.push({
@@ -232,7 +241,7 @@ export default function DetailPage() {
             quantity: Number(it.qty_count ?? it.qty ?? 1),
             image: resolveAssetImage(it.pic ?? undefined, 'asset') ?? undefined,
           }));
-          // detect if any item has confirmation in process
+
           const anyInProcess = itemResult.some(it =>
             ((it.is_konfirmasi ?? '') as string)
               .toString()
@@ -268,7 +277,6 @@ export default function DetailPage() {
             if (Array.isArray(ik)) setItemKonfirmasi(ik as ItemApi[]);
           }
 
-          // Extract PIC employee from inventoryResult if data is array
           if (Array.isArray(penData)) {
             const firstItem = penData[0];
             if (firstItem && typeof firstItem === 'object') {
@@ -308,13 +316,17 @@ export default function DetailPage() {
         statusHistory,
         id: data.id,
         status: data.status ?? null,
+        status_konfirmasi: data.status_konfirmasi ?? null,
+        tgl_penyerahan: data.tgl_penyerahan ?? null,
       };
-      setAssetImage(
-        (data.gambar ?? data.assetImage ?? undefined) as string | undefined
-      );
-      // Set bukti penerimaan image from gambar field
-      setBuktiPenerimaanImage(data.gambar ?? null);
-      // Set tgl_penyerahan for penyerahan card
+      const rawAssetImage = (data.gambar ?? data.assetImage ?? undefined) as
+        | string
+        | undefined;
+      setAssetImage(resolveAssetImage(rawAssetImage, 'asset'));
+
+      const rawBuktiImage = data.gambar ?? null;
+      setBuktiPenerimaanImage(resolveAssetImage(rawBuktiImage, 'asset'));
+
       setTglPenyerahan(data.tgl_penyerahan ?? null);
       setTransaction(parsed);
     } catch (error) {
@@ -323,7 +335,6 @@ export default function DetailPage() {
   }, [slug]);
 
   const refreshData = useCallback(async () => {
-    // reset confirmation flag on slug change
     setHasItemConfirmationInProcess(false);
     setItemKonfirmasi([]);
     setBuktiPenerimaanImage(null);
@@ -531,12 +542,14 @@ export default function DetailPage() {
                           ? ''
                           : key.includes('konfirmasi')
                             ? ''
-                            : key.includes('penyerahan')
-                              ? 'bg-orange-500'
-                              : key.includes('selesai') ||
-                                  key.includes('completed')
-                                ? 'bg-slate-600'
-                                : 'bg-red-600';
+                            : key.includes('pengambilan')
+                              ? 'bg-blue-500'
+                              : key.includes('penyerahan')
+                                ? 'bg-orange-500'
+                                : key.includes('selesai') ||
+                                    key.includes('completed')
+                                  ? 'bg-slate-600'
+                                  : 'bg-red-600';
 
                     const Icon = key.includes('diajukan')
                       ? Mail
@@ -546,12 +559,14 @@ export default function DetailPage() {
                           ? CheckCircle
                           : key.includes('konfirmasi')
                             ? FileCheck
-                            : key.includes('penyerahan')
-                              ? HandHeart
-                              : key.includes('selesai') ||
-                                  key.includes('completed')
-                                ? MailCheck
-                                : XCircle;
+                            : key.includes('pengambilan')
+                              ? HourglassIcon
+                              : key.includes('penyerahan')
+                                ? HandHeart
+                                : key.includes('selesai') ||
+                                    key.includes('completed')
+                                  ? MailCheck
+                                  : XCircle;
 
                     return (
                       <div
@@ -591,6 +606,9 @@ export default function DetailPage() {
                               }
                               if (key.includes('penyerahan')) {
                                 return `Diterima oleh ${s.actor}`;
+                              }
+                              if (key.includes('pengambilan')) {
+                                return `Menunggu Pengambilan Asset`;
                               }
                               return `${s.status} oleh ${s.actor}`;
                             })()}
@@ -651,6 +669,54 @@ export default function DetailPage() {
                         </div>
                       </div>
                     )}
+
+                  {transaction?.status_konfirmasi === 'Dikonfirmasi' &&
+                    transaction?.tgl_penyerahan === null &&
+                    !(transaction?.status ?? '')
+                      .toString()
+                      .toLowerCase()
+                      .includes('batal') && (
+                      <div className="relative mb-6 flex items-start gap-4">
+                        <div
+                          className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-600 shadow-sm ring-2 ring-white/40 dark:ring-neutral-800/40"
+                          style={{
+                            position: 'absolute',
+                            left: '15px',
+                            transform: 'translateX(-25%)',
+                          }}
+                        >
+                          <HourglassIcon className="h-6 w-6 animate-spin text-white" />
+                        </div>
+
+                        <div className="ml-14 rounded-md border border-neutral-100 bg-white p-4 shadow-sm dark:border-neutral-700">
+                          <p className="font-semibold text-neutral-900 dark:text-neutral-100">
+                            Menunggu Pengambilan Asset
+                          </p>
+
+                          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                            Permintaan telah disetujui, Silahkan ambil asset
+                            anda.
+                          </p>
+
+                          <div className="mt-3">
+                            <Button
+                              className="w-full cursor-pointer bg-red-600 text-white hover:bg-red-500"
+                              disabled={cancelLoading}
+                              onClick={() => {
+                                if (!transaction?.id) return;
+                                setShowCancelDialog(true);
+                              }}
+                            >
+                              Batalkan{' '}
+                              {transaction?.type === 'permintaan'
+                                ? 'Permintaan'
+                                : 'Peminjaman'}{' '}
+                              Asset
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                 </div>
 
                 {buktiPenerimaanImage && (
@@ -660,7 +726,11 @@ export default function DetailPage() {
                       onClick={() => {
                         if (buktiPenerimaanImage) {
                           setPenyerahanImage({
-                            url: `https://storage.googleapis.com/pkc_gcp-storage/asset/transaksi/${buktiPenerimaanImage}`,
+                            url:
+                              resolveAssetImage(
+                                buktiPenerimaanImage,
+                                'transaksi'
+                              ) ?? '',
                             name: `Bukti Penerimaan - ${transaction.transactionNo}`,
                           });
                           setShowPenyerahanModal(true);
@@ -704,7 +774,9 @@ export default function DetailPage() {
                       <div className="space-y-4">
                         {itemKonfirmasi.map((item, i) => {
                           const imageUrl = item.pic
-                            ? `https://storage.googleapis.com/pkc_gcp-storage/asset/asset/${item.pic}`
+                            ? (resolveAssetImage(item.pic, 'asset') ??
+                              assetImage ??
+                              '')
                             : (assetImage ?? '');
 
                           return (
@@ -753,7 +825,9 @@ export default function DetailPage() {
                     <div className="mt-2 space-y-4">
                       {itemKonfirmasi.map((item, i) => {
                         const imageUrl = item.pic
-                          ? `https://storage.googleapis.com/pkc_gcp-storage/asset/asset/${item.pic}`
+                          ? (resolveAssetImage(item.pic, 'asset') ??
+                            assetImage ??
+                            '')
                           : (assetImage ?? '');
 
                         return (

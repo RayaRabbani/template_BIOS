@@ -108,7 +108,11 @@ export function AddAssetModal({
 
   const handleSubmit = form.handleSubmit(
     async values => {
-      const payloadId = Number(selectedAsset?.id || (item as UIAsset).id);
+      const payloadId = Number(
+        selectedAsset?.kategori_id ??
+          (item as UIAsset).kategori_id ??
+          (item as UIAsset).id
+      );
       const parsedQty = Number(values.qty);
 
       if (type === 'peminjaman') {
@@ -250,6 +254,17 @@ export function AddAssetModal({
 
             return {
               id: id as number | string,
+              kategori_id: (typeof rec.kategori_id === 'number'
+                ? (rec.kategori_id as number)
+                : typeof rec.kategori_id === 'string'
+                  ? Number(rec.kategori_id)
+                  : undefined) as number | undefined,
+              kompilator_id:
+                typeof rec.kompilator_id === 'number'
+                  ? (rec.kompilator_id as number)
+                  : typeof rec.kompilator_id === 'string'
+                    ? Number(rec.kompilator_id)
+                    : undefined,
               name,
               available,
               desc: undefined,

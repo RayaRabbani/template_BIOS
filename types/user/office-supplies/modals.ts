@@ -73,9 +73,9 @@ export type DetailApprovalData = {
   assetImage?: string | null;
   requestDate?: string;
   approveDate?: string;
-  returnDate?: string;
-  status: "pending" | "approved" | "rejected" | "completed";
-  variant?: "default" | "success" | "danger";
+  returnDate?: string | null;
+  status: 'pending' | 'approved' | 'rejected' | 'completed';
+  variant?: 'default' | 'success' | 'danger';
   approverName?: string;
   approverNip?: string;
   approverAvatar?: string | null;
