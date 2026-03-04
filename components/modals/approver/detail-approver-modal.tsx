@@ -145,6 +145,7 @@ export default function DetailApproverModal({
                       nip: data.no_badge_approval ?? '-',
                       avatar: data.pic_approval ?? '/images/avatar-pic.jpg',
                     }}
+                    catatan={data.catatan_approval}
                     variant="danger"
                     active
                   />
@@ -162,6 +163,7 @@ export default function DetailApproverModal({
                       nip: data.no_badge_approval ?? '-',
                       avatar: data.pic_approval ?? '/images/avatar-pic.jpg',
                     }}
+                    catatan={data.catatan_approval}
                     variant="success"
                     active
                   />
@@ -219,6 +221,7 @@ export default function DetailApproverModal({
                       nip: data.no_badge_approval ?? '-',
                       avatar: data.pic_approval ?? '/images/avatar-pic.jpg',
                     }}
+                    catatan={data.catatan_approval}
                     variant="danger"
                     active
                   />
@@ -236,6 +239,7 @@ export default function DetailApproverModal({
                       nip: data.no_badge_approval ?? '-',
                       avatar: data.pic_approval ?? '/images/avatar-pic.jpg',
                     }}
+                    catatan={data.catatan_approval}
                     variant="success"
                     active
                   />
@@ -348,6 +352,7 @@ function TimelineItem({
   time,
   active,
   approver,
+  catatan,
   variant = 'default',
 }: {
   title: string;
@@ -358,6 +363,7 @@ function TimelineItem({
     nip: string;
     avatar: string;
   };
+  catatan?: string | null;
   variant?: 'default' | 'success' | 'danger';
 }) {
   const isDanger = variant === 'danger';
@@ -409,21 +415,37 @@ function TimelineItem({
       </p>
 
       {approver && (
-        <div className="mt-2 ml-1 flex items-center gap-3">
-          <Avatar className="h-11 w-11 overflow-hidden rounded-full">
-            <AvatarImage src={approver.avatar} alt={approver.name} className="object-cover object-top w-full h-full" />
-            <AvatarFallback className="rounded-full">
-              {approver.name
-                .split(' ')
-                .map(n => n[0])
-                .slice(0, 2)
-                .join('')}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <p className="text-sm font-semibold">{approver.name}</p>
-            <p className="text-xs text-neutral-500">{approver.nip}</p>
+        <div className="mt-2 ml-1 flex flex-col gap-2">
+          <div className="flex items-center gap-3">
+            <Avatar className="h-11 w-11 overflow-hidden rounded-full">
+              <AvatarImage
+                src={approver.avatar}
+                alt={approver.name}
+                className="h-full w-full object-cover object-top"
+              />
+              <AvatarFallback className="rounded-full">
+                {approver.name
+                  .split(' ')
+                  .map(n => n[0])
+                  .slice(0, 2)
+                  .join('')}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <p className="text-sm font-semibold">{approver.name}</p>
+              <p className="text-xs text-neutral-500">{approver.nip}</p>
+            </div>
           </div>
+          {catatan && (
+            <div className="rounded-md border border-neutral-100 bg-neutral-50 p-2 dark:border-neutral-800 dark:bg-neutral-900/50">
+              <p className="text-[10px] font-bold tracking-wider text-neutral-400 uppercase">
+                Catatan Approval
+              </p>
+              <p className="text-xs text-neutral-600 dark:text-neutral-300">
+                {catatan}
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>

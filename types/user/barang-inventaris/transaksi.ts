@@ -5,7 +5,7 @@ export type HistoryItem = {
   slug?: string | null;
   date: string;
   employee: string;
-  status: 'pending' | 'approved' | 'rejected' | 'completed';
+  status: 'pending' | 'approved' | 'rejected' | 'completed' | 'diterima';
   confirmationStatus?: string | null;
   status_konfirmasi?: string | null;
   tgl_penyerahan?: string | null;

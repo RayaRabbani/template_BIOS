@@ -107,57 +107,67 @@ export async function getApprovals(
 }
 
 export async function approvePeminjamanRequest(
-  id: string | number
-  // payload: ApprovalPayload
+  id: string | number,
+  payload: ApprovalPayload
 ): Promise<ApiResponse> {
   const res = await client.put<ApiResponse>(
-    `/transaksi-peminjaman/approval/${id}`
+    `/transaksi-peminjaman/approval/${id}`,
+    payload
   );
   return res.data;
 }
 
 export async function rejectPeminjamanRequest(
-  id: string | number
-  // payload: ApprovalPayload
+  id: string | number,
+  payload: ApprovalPayload
 ): Promise<ApiResponse> {
   const res = await client.put<ApiResponse>(
-    `/transaksi-peminjaman/reject/${id}`
+    `/transaksi-peminjaman/reject/${id}`,
+    payload
   );
   return res.data;
 }
 
 export async function approvePermintaanRequest(
-  id: string | number
+  id: string | number,
+  payload: ApprovalPayload
 ): Promise<ApiResponse> {
   const res = await client.put<ApiResponse>(
-    `/transaksi-permintaan/approval/${id}`
+    `/transaksi-permintaan/approval/${id}`,
+    payload
   );
   return res.data;
 }
 
 export async function rejectPermintaanRequest(
-  id: string | number
+  id: string | number,
+  payload: ApprovalPayload
 ): Promise<ApiResponse> {
   const res = await client.put<ApiResponse>(
-    `/transaksi-permintaan/reject/${id}`
+    `/transaksi-permintaan/reject/${id}`,
+    payload
   );
   return res.data;
 }
 
 export async function approveOfficeSuppliesRequest(
-  id: string | number
+  id: string | number,
+  payload: ApprovalPayload
 ): Promise<ApiResponse> {
   const res = await client.put<ApiResponse>(
-    `/transaksi-permintaan-consumable/approval/${id}`
+    `/transaksi-permintaan-consumable/approval/${id}`,
+    payload
   );
   return res.data;
 }
 
 export async function rejectOfficeSuppliesRequest(
-  id: string | number
+  id: string | number,
+  payload: ApprovalPayload
 ): Promise<ApiResponse> {
   const res = await client.put<ApiResponse>(
-    `/transaksi-permintaan-consumable/reject/${id}`
+    `/transaksi-permintaan-consumable/reject/${id}`,
+    payload
   );
   return res.data;
 }

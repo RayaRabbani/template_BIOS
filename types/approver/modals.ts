@@ -1,10 +1,10 @@
 export type HistoryItem = {
   id: number;
-  type: "peminjaman" | "permintaan";
+  type: 'peminjaman' | 'permintaan';
   transactionNo: string;
   date: string;
   employee: string;
-  status: "pending" | "approved" | "rejected" | "completed" | "cancelled";
+  status: 'pending' | 'approved' | 'rejected' | 'completed' | 'cancelled';
   returnDate?: string;
   assetName?: string;
   assetImage?: string;
@@ -14,6 +14,7 @@ export type HistoryItem = {
   nama_approval?: string | null;
   approval_at?: string | null;
   no_badge_approval?: string | null;
+  catatan_approval?: string | null;
   tgl_permintaan?: string | null;
   tgl_peminjaman?: string | null;
   qty?: number;
@@ -37,7 +38,7 @@ export type ModalTarget = {
   transactionNo?: string;
   employee?: string;
   item?: ModalAsset[];
-  type?: "peminjaman" | "permintaan" | string;
+  type?: 'peminjaman' | 'permintaan' | string;
   tipe?: string;
   nama?: string;
   transaction_id?: string;
@@ -58,11 +59,12 @@ export type DetailApprovalData = {
   tgl_permintaan?: string | null;
   tgl_peminjaman?: string | null;
   approval_at?: string | null;
-  status: "pending" | "approved" | "rejected" | "completed" | "cancelled";
-  variant?: "default" | "success" | "danger";
+  status: 'pending' | 'approved' | 'rejected' | 'completed' | 'cancelled';
+  variant?: 'default' | 'success' | 'danger';
   pic_approval?: string | null;
   no_badge_approval?: string | null;
   nama_approval?: string | null;
+  catatan_approval?: string | null;
   item?: Array<{
     id?: string | number;
     nama?: string;

@@ -48,6 +48,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import {
   cancelOfficeSuppliesTransaksiRequest,
   getPeminjamanTransaksi,
+  getPenyerahanTransaksi,
   getTransaksiConsumableBySlug,
   getTransaksiConsumableItems,
 } from '@/lib/api/user';
@@ -74,12 +75,17 @@ export default function DetailPage() {
     null
   );
   const [assetImage, setAssetImage] = useState<string | undefined | null>(null);
+  const [buktiPenerimaanImage, setBuktiPenerimaanImage] = useState<
+    string | null
+  >(null);
+  const [tglPenyerahan, setTglPenyerahan] = useState<string | null>(null);
   const [itemKonfirmasi, setItemKonfirmasi] = useState<ItemApi[]>([]);
   const [showPenyerahanModal, setShowPenyerahanModal] = useState(false);
   const [penyerahanImage, setPenyerahanImage] = useState<{
     url: string;
     name: string;
   } | null>(null);
+  const [picEmployee, setPicEmployee] = useState<string | null>(null);
   const router = useRouter();
 
   const { slug } = useParams<{ slug: string }>();
@@ -141,9 +147,23 @@ export default function DetailPage() {
         });
       }
 
+      // Add "Diterima" status if penyerahan exists
+      if (
+        (data.status?.toLowerCase() === 'diterima' ||
+          data.status_konfirmasi?.toLowerCase() === 'dikonfirmasi') &&
+        data.tgl_penyerahan
+      ) {
+        statusHistory.push({
+          status: 'Diterima',
+          timestamp: data.tgl_penyerahan,
+          actor: data.nama ?? 'System',
+        });
+      }
+
       if (
         data.updated_at &&
-        !statusHistory.find(s => s.timestamp === data.updated_at)
+        data.status !== 'Diterima' &&
+        !statusHistory.find(s => s.status === (data.status ?? 'Status'))
       ) {
         statusHistory.push({
           status: data.status ?? 'Status',
@@ -152,9 +172,22 @@ export default function DetailPage() {
         });
       }
 
+      // Sort status history by timestamp to ensure chronological order
       statusHistory.sort((a, b) => {
         const timeA = new Date(a.timestamp).getTime();
         const timeB = new Date(b.timestamp).getTime();
+
+        const isSelesaiA =
+          a.status?.toLowerCase().includes('selesai') ||
+          a.status?.toLowerCase().includes('completed');
+        const isSelesaiB =
+          b.status?.toLowerCase().includes('selesai') ||
+          b.status?.toLowerCase().includes('completed');
+
+        // Ensure "Selesai" or "Completed" is always at the absolute end
+        if (isSelesaiA && !isSelesaiB) return 1;
+        if (!isSelesaiA && isSelesaiB) return -1;
+
         return timeA - timeB;
       });
 
@@ -177,7 +210,7 @@ export default function DetailPage() {
           }
           return [] as ItemApi[];
         })();
-        
+
         const itemKonfirmasiData = (() => {
           const p = payloadItems as unknown;
           if (p && typeof p === 'object') {
@@ -202,17 +235,6 @@ export default function DetailPage() {
         })();
 
         setItemKonfirmasi(itemKonfirmasiData);
-
-        if (itemKonfirmasiData.length > 0 && data.tgl_penyerahan) {
-          const firstConfirmedItem = itemKonfirmasiData[0];
-          if (firstConfirmedItem && firstConfirmedItem.updated_at) {
-            statusHistory.push({
-              status: 'Penyerahan',
-              timestamp: firstConfirmedItem.updated_at,
-              actor: firstConfirmedItem.no_badge || 'System',
-            });
-          }
-        }
 
         if (itemResult.length) {
           items = itemResult.map((it: ItemApi) => ({
@@ -262,6 +284,51 @@ export default function DetailPage() {
         status_konfirmasi: data.status_konfirmasi ?? null,
         tgl_penyerahan: data.tgl_penyerahan ?? null,
       };
+
+      try {
+        if (data.id) {
+          const penyerahanPayload = await getPenyerahanTransaksi(data.id);
+          const p = penyerahanPayload as unknown as Record<string, unknown>;
+          const penData = (p.data ?? p) as
+            | Record<string, unknown>
+            | Record<string, unknown>[]
+            | undefined;
+
+          if (
+            penData &&
+            typeof penData === 'object' &&
+            (!Array.isArray(penData) || penData.length > 0)
+          ) {
+            const finalData = Array.isArray(penData)
+              ? (penData[0] as Record<string, unknown>)
+              : penData;
+
+            const tgl = finalData.tgl_penyerahan as string | undefined;
+            if (tgl) setTglPenyerahan(String(tgl));
+
+            const gambar = (finalData.gambar ??
+              finalData.bukti ??
+              finalData.image) as string | undefined;
+            if (gambar) setBuktiPenerimaanImage(String(gambar));
+
+            const ik =
+              finalData.itemKonfirmasi ??
+              finalData.itemkonfirmasi ??
+              finalData.item_konfirmasi;
+            if (Array.isArray(ik)) setItemKonfirmasi(ik as ItemApi[]);
+
+            const inventoryResult = finalData.inventoryResult as
+              | Record<string, unknown>
+              | undefined;
+            if (inventoryResult?.name_employee) {
+              setPicEmployee(String(inventoryResult.name_employee));
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('[transaksi-detail] failed to fetch penyerahan data', err);
+      }
+
       const rawAssetImg = data.gambar ?? data.assetImage ?? null;
       setAssetImage(
         rawAssetImg && rawAssetImg.lastIndexOf('https://') > 0
@@ -286,6 +353,9 @@ export default function DetailPage() {
   const refreshData = useCallback(async () => {
     setHasItemConfirmationInProcess(false);
     setItemKonfirmasi([]);
+    setBuktiPenerimaanImage(null);
+    setTglPenyerahan(null);
+    setPicEmployee(null);
     await fetchDetail();
   }, [fetchDetail]);
 
@@ -479,7 +549,8 @@ export default function DetailPage() {
                           ? ''
                           : key.includes('pengambilan')
                             ? 'bg-blue-600'
-                            : key.includes('penyerahan')
+                            : key.includes('penyerahan') ||
+                                key.includes('diterima')
                               ? 'bg-orange-500'
                               : key.includes('selesai') ||
                                   key.includes('completed')
@@ -496,7 +567,8 @@ export default function DetailPage() {
                             ? FileCheck
                             : key.includes('pengambilan')
                               ? HourglassIcon
-                              : key.includes('penyerahan')
+                              : key.includes('penyerahan') ||
+                                  key.includes('diterima')
                                 ? HandHeart
                                 : key.includes('selesai') ||
                                     key.includes('completed')
@@ -689,14 +761,10 @@ export default function DetailPage() {
           <Card className="sticky top-2 rounded-md border border-neutral-100 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
             <CardHeader>
               <CardTitle className="text-m dark:text-white">
-                {itemKonfirmasi.length > 0
-                  ? 'Detail Penyerahan Asset'
-                  : 'Detail Permintaan Asset'}
+                Detail Permintaan Asset
               </CardTitle>
               <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-                {itemKonfirmasi.length > 0
-                  ? 'Berikut Detail Penyerahan Asset'
-                  : 'Berikut Detail Permintaan Asset'}
+                Berikut Detail Permintaan Asset
               </p>
             </CardHeader>
 
@@ -882,6 +950,107 @@ export default function DetailPage() {
               )}
             </CardContent>
           </Card>
+
+          {/* Card Detail Penyerahan Asset - tampil jika tgl_penyerahan tidak null */}
+          {tglPenyerahan && (
+            <Card className="sticky top-64 mt-4 rounded-md border border-neutral-100 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+              <CardHeader>
+                <CardTitle className="text-m dark:text-white">
+                  Detail Penyerahan Asset
+                </CardTitle>
+                <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
+                  Berikut Detail Penyerahan Asset yang Telah Diserahkan
+                </p>
+              </CardHeader>
+
+              <CardContent>
+                <div>
+                  <p className="text-m mb-2 text-neutral-700 dark:text-neutral-300">
+                    Asset Yang Diserahkan
+                  </p>
+
+                  {itemKonfirmasi.length > 3 ? (
+                    <ScrollArea className="mt-2 h-54 max-h-54">
+                      <div className="space-y-4">
+                        {itemKonfirmasi.map((item, i) => {
+                          const imageUrl = item.pic
+                            ? `https://storage.googleapis.com/pkc_gcp-storage/asset/asset/${item.pic}`
+                            : (assetImage ?? '');
+
+                          return (
+                            <div
+                              key={i}
+                              className="flex items-center gap-4 rounded-md border border-neutral-100 p-3 shadow-sm dark:border-neutral-700"
+                            >
+                              <Image
+                                src={imageUrl}
+                                width={70}
+                                height={70}
+                                alt={item.nama ?? 'asset'}
+                                unoptimized={true}
+                                className="cursor-zoom-in rounded-md object-cover transition hover:opacity-80"
+                                onClick={() => setPreviewImage(imageUrl)}
+                              />
+                              <div>
+                                <p className="text-m dark:text-white">
+                                  {item.nama}
+                                </p>
+                                {/* <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                                  Diajukan: {item.qty || 0}
+                                </p> */}
+                                <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                                  PIC: {picEmployee || '-'}
+                                </p>
+                                <p className="text-sm font-medium text-green-600 dark:text-green-400">
+                                  Diserahkan: {formatTimestamp(tglPenyerahan)}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </ScrollArea>
+                  ) : (
+                    <div className="mt-2 space-y-4">
+                      {itemKonfirmasi.map((item, i) => {
+                        const imageUrl = item.pic
+                          ? `https://storage.googleapis.com/pkc_gcp-storage/asset/asset/${item.pic}`
+                          : (assetImage ?? '');
+
+                        return (
+                          <div
+                            key={i}
+                            className="flex items-center gap-4 rounded-md border border-neutral-100 p-3 shadow-sm dark:border-neutral-700"
+                          >
+                            <Image
+                              src={imageUrl}
+                              width={70}
+                              height={70}
+                              alt={item.nama ?? 'asset'}
+                              unoptimized={true}
+                              className="cursor-zoom-in rounded-md object-cover transition hover:opacity-80"
+                              onClick={() => setPreviewImage(imageUrl)}
+                            />
+                            <div>
+                              <p className="text-m dark:text-white">
+                                {item.nama}
+                              </p>
+                              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                                PIC: {picEmployee || '-'}
+                              </p>
+                              <p className="text-sm font-medium text-green-600 dark:text-green-400">
+                                Diserahkan: {formatTimestamp(tglPenyerahan)}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
       {previewImage && (

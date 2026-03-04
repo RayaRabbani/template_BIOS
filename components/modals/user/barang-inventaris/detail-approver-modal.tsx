@@ -85,7 +85,7 @@ export default function DetailApprovalModal({
           </p>
         </div>
 
-        <div className="grid grid-cols-1 px-6 md:grid-cols-[1fr_220px]">
+        <div className="grid grid-cols-1 px-6">
           <div className="relative ml-3 border-l border-neutral-300 dark:border-neutral-700">
             {type === 'peminjaman' ? (
               <>
@@ -128,6 +128,7 @@ export default function DetailApprovalModal({
                           ? data.approverAvatar
                           : '/images/avatar-pic.jpg',
                     }}
+                    catatan={data.catatan_approval}
                     variant="danger"
                     active
                   />
@@ -145,6 +146,7 @@ export default function DetailApprovalModal({
                       nip: data.approverNip ?? '',
                       avatar: data.approverAvatar ?? '/images/avatar-pic.jpg',
                     }}
+                    catatan={data.catatan_approval}
                     variant="success"
                     active
                   />
@@ -205,6 +207,7 @@ export default function DetailApprovalModal({
                           ? data.approverAvatar
                           : '/images/avatar-pic.jpg',
                     }}
+                    catatan={data.catatan_approval}
                     variant="danger"
                     active
                   />
@@ -222,6 +225,7 @@ export default function DetailApprovalModal({
                       nip: data.approverNip ?? '',
                       avatar: data.approverAvatar ?? '/images/avatar-pic.jpg',
                     }}
+                    catatan={data.catatan_approval}
                     variant="success"
                     active
                   />
@@ -235,14 +239,19 @@ export default function DetailApprovalModal({
               </>
             )}
           </div>
-
-          <div className="w-[200px] shrink-0">
-            <StatusSummaryCard data={data} />
-          </div>
         </div>
 
         <div className="-mt-4 mb-4 px-6">
-          <p className="mb-1 font-semibold">List Asset</p>
+          <p className="mb-1 font-semibold">
+            List Asset (
+            {(() => {
+              if (Array.isArray(data.item) && data.item.length > 0) {
+                return data.item.reduce((sum, it) => sum + (it.qty ?? 1), 0);
+              }
+              return 1;
+            })()}{' '}
+            Item)
+          </p>
 
           {Array.isArray(data.item) && data.item.length > 0 ? (
             <ScrollArea
@@ -364,6 +373,7 @@ function TimelineItem({
   time,
   active,
   approver,
+  catatan,
   variant = 'default',
 }: {
   title: string;
@@ -374,6 +384,7 @@ function TimelineItem({
     nip: string;
     avatar: string;
   };
+  catatan?: string | null;
   variant?: 'default' | 'success' | 'danger';
 }) {
   const isDanger = variant === 'danger';
@@ -425,81 +436,45 @@ function TimelineItem({
       </p>
 
       {approver && (
-        <div className="mt-2 ml-1 flex items-center gap-3">
-          <Avatar className="h-12 w-12 overflow-hidden rounded-full border border-neutral-300 dark:border-neutral-700">
-            {approver.avatar ? (
-              <AvatarImage
-                src={approver.avatar}
-                alt={approver.name ?? 'approver'}
-                className="object-cover object-top w-full h-full"
-              />
-            ) : (
-              <AvatarFallback>
-                {approver.name
-                  ? approver.name
-                      .split(' ')
-                      .map(n => n[0])
-                      .slice(0, 2)
-                      .join('')
-                      .toUpperCase()
-                  : '?'}
-              </AvatarFallback>
-            )}
-          </Avatar>
-          <div>
-            <p className="text-sm font-semibold">{approver.name}</p>
-            <p className="text-xs text-neutral-500">{approver.nip}</p>
+        <div className="mt-2 ml-1 flex flex-col gap-2">
+          <div className="flex items-center gap-3">
+            <Avatar className="h-11 w-11 overflow-hidden rounded-full border border-neutral-300 dark:border-neutral-700">
+              {approver.avatar ? (
+                <AvatarImage
+                  src={approver.avatar}
+                  alt={approver.name ?? 'approver'}
+                  className="h-full w-full object-cover object-top"
+                />
+              ) : (
+                <AvatarFallback>
+                  {approver.name
+                    ? approver.name
+                        .split(' ')
+                        .map(n => n[0])
+                        .slice(0, 2)
+                        .join('')
+                        .toUpperCase()
+                    : '?'}
+                </AvatarFallback>
+              )}
+            </Avatar>
+            <div>
+              <p className="text-sm font-semibold">{approver.name}</p>
+              <p className="text-xs text-neutral-500">{approver.nip}</p>
+            </div>
           </div>
+          {catatan && (
+            <div className="rounded-md border border-neutral-100 bg-neutral-50 p-2 dark:border-neutral-800 dark:bg-neutral-900/50">
+              <p className="text-[10px] font-bold tracking-wider text-neutral-400 uppercase">
+                Catatan Approval
+              </p>
+              <p className="text-xs text-neutral-600 dark:text-neutral-300">
+                {catatan}
+              </p>
+            </div>
+          )}
         </div>
       )}
-    </div>
-  );
-}
-
-function StatusSummaryCard({ data }: { data: DetailApprovalData }) {
-  const totalItem =
-    Array.isArray(data.item) && data.item.length > 0
-      ? data.item.reduce((sum, it) => sum + (it.qty ?? 1), 0)
-      : 1;
-
-  const statusLabel =
-    data.status === 'approved'
-      ? 'Disetujui'
-      : data.status === 'rejected'
-        ? 'Ditolak'
-        : data.status === 'cancelled'
-          ? 'Dibatalkan'
-          : data.status === 'completed'
-            ? 'Selesai'
-            : 'Menunggu';
-
-  const statusColor =
-    data.status === 'approved'
-      ? 'text-green-600'
-      : data.status === 'rejected'
-        ? 'text-red-600'
-        : data.status === 'cancelled'
-          ? 'text-red-600'
-          : data.status === 'completed'
-            ? 'text-slate-600'
-            : 'text-yellow-600';
-
-  return (
-    <div className="rounded-md border border-neutral-200 bg-white/70 p-4 backdrop-blur dark:border-neutral-800 dark:bg-neutral-900/60 ml-4">
-      <p className="text-xs text-neutral-500 dark:text-neutral-400">
-        Status Saat Ini
-      </p>
-
-      <p className={`text-m mt-1 font-semibold ${statusColor}`}>
-        {statusLabel}
-      </p>
-
-      <div className="mt-3 text-sm">
-        <p className="text-neutral-500 dark:text-neutral-400">Total Asset</p>
-        <p className="text-m font-semibold text-neutral-900 dark:text-white">
-          {totalItem} Item
-        </p>
-      </div>
     </div>
   );
 }

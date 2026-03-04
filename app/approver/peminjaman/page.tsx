@@ -103,6 +103,8 @@ export default function HistoryPage() {
   const [confirmTargetId, setConfirmTargetId] = useState<number | null>(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
 
+  const [refreshKey, setRefreshKey] = useState(0);
+
   const [page, setPage] = useState(1);
   const pageSize = 10;
   const totalPages = Math.max(1, Math.ceil(data.length / pageSize));
@@ -209,6 +211,7 @@ export default function HistoryPage() {
               nama_approval: d.nama_approval ?? null,
               pic_approval: d.pic_approval ?? null,
               no_badge_approval: d.no_badge_approval ?? null,
+              catatan_approval: d.catatan_approval ?? null,
               pic: d.pic ?? null,
               qty: firstItem?.qty ?? d.qty ?? 1,
               status,
@@ -284,7 +287,7 @@ export default function HistoryPage() {
     }
 
     loadApproverData();
-  }, [search, filterStatus, appliedPeriod, session?.user?.id]);
+  }, [search, filterStatus, appliedPeriod, session?.user?.id, refreshKey]);
 
   const statusSoftColor = (status: string) => {
     switch (status) {
@@ -321,8 +324,17 @@ export default function HistoryPage() {
       setConfirmLoading(true);
 
       let apiResult;
+      const user = session?.user;
+      const payload = {
+        no_badge_approval:
+          user?.id ?? user?.no_badge ?? user?.noBadge ?? user?.email ?? '',
+        nama_approval: user?.name ?? user?.nama ?? '',
+        pic_approval: user?.image ?? user?.pic ?? '',
+        catatan_approval: note ?? '',
+      };
+
       if (currentAction === 'approve') {
-        apiResult = await approvePeminjamanRequest(confirmTargetId);
+        apiResult = await approvePeminjamanRequest(confirmTargetId, payload);
         if (apiResult.statusCode === 200 || apiResult.statusCode === 201) {
           setData(d =>
             d.map(it =>
@@ -330,11 +342,12 @@ export default function HistoryPage() {
             )
           );
           toast.success('Permintaan berhasil disetujui');
+          setRefreshKey(prev => prev + 1);
         } else {
           throw new Error(apiResult.message || 'Gagal menyetujui peminjaman');
         }
       } else if (currentAction === 'reject') {
-        apiResult = await rejectPeminjamanRequest(confirmTargetId);
+        apiResult = await rejectPeminjamanRequest(confirmTargetId, payload);
         if (apiResult.statusCode === 200 || apiResult.statusCode === 201) {
           setData(d =>
             d.map(it =>
@@ -342,6 +355,7 @@ export default function HistoryPage() {
             )
           );
           toast.success('Permintaan berhasil ditolak');
+          setRefreshKey(prev => prev + 1);
         } else {
           throw new Error(apiResult.message || 'Gagal menolak peminjaman');
         }
@@ -800,7 +814,7 @@ export default function HistoryPage() {
                                 <AvatarImage
                                   src={item.pic ?? '/images/avatar-pic.jpg'}
                                   alt={item.employee ?? 'avatar'}
-                                  className="object-cover object-top w-full h-full"
+                                  className="h-full w-full object-cover object-top"
                                 />
                                 <AvatarFallback className="rounded-full">
                                   {item.employee

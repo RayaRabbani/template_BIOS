@@ -1,10 +1,10 @@
 export type HistoryItem = {
   id: number;
-  type: "peminjaman" | "permintaan";
+  type: 'peminjaman' | 'permintaan';
   transactionNo: string;
   date: string;
   employee: string;
-  status: "pending" | "approved" | "rejected" | "completed" | "cancelled";
+  status: 'pending' | 'approved' | 'rejected' | 'completed' | 'cancelled';
   returnDate?: string;
   assetName?: string;
   assetImage?: string;
@@ -14,6 +14,7 @@ export type HistoryItem = {
   nama_approval?: string | null;
   approval_at?: string | null;
   no_badge_approval?: string | null;
+  catatan_approval?: string | null;
   tgl_permintaan?: string | null;
   tgl_peminjaman?: string | null;
   qty?: number;

@@ -124,7 +124,7 @@ export function AddAssetModal({
             kompilator_id: selectedAsset?.kompilator_id ?? 3,
             no_badge: session?.user?.id || '',
             nama: values.name,
-            pic: selectedAsset?.image ?? (item as UIAsset).image ?? '',
+            pic: (selectedAsset?.pic ?? item?.pic ?? '').split('/').pop() || '',
             qty: parsedQty,
             catatan: values.notes || '',
           } as const;
@@ -165,7 +165,7 @@ export function AddAssetModal({
             kompilator_id: selectedAsset?.kompilator_id ?? 3,
             no_badge: session?.user?.id || '',
             nama: values.name,
-            pic: selectedAsset?.image ?? (item as UIAsset).image ?? '',
+            pic: (selectedAsset?.pic ?? item?.pic ?? '').split('/').pop() || '',
             qty: parsedQty,
             catatan: values.notes || '',
           } as const;
@@ -246,14 +246,17 @@ export function AddAssetModal({
             }
 
             const gambarinv = rec.gambarinventory;
+            let rawPic = '';
             if (Array.isArray(gambarinv) && gambarinv.length > 0) {
               const first = gambarinv[0] as Record<string, unknown> | undefined;
               const g = first?.gambar as string | undefined;
               image = resolveAssetImage(g ?? undefined, 'asset') ?? null;
+              rawPic = g ?? '';
             }
 
             return {
               id: id as number | string,
+              pic: rawPic,
               kategori_id: (typeof rec.kategori_id === 'number'
                 ? (rec.kategori_id as number)
                 : typeof rec.kategori_id === 'string'
@@ -378,6 +381,10 @@ export function AddAssetModal({
                                   setSelectedAsset(s);
                                   setName(s.name || '');
                                   form.setValue('name', s.name || '');
+                                  setSelectedAsset({
+                                    ...s,
+                                    pic: s.pic || '',
+                                  });
                                   setTimeout(
                                     () =>
                                       formRef.current?.scrollIntoView({
@@ -497,7 +504,10 @@ export function AddAssetModal({
                                       s.available === 0
                                     )
                                       return;
-                                    setSelectedAsset(s);
+                                    setSelectedAsset({
+                                      ...s,
+                                      pic: s.pic || '',
+                                    });
                                     setName(s.name || '');
                                     form.setValue('name', s.name || '');
                                     setTimeout(

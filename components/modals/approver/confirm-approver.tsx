@@ -1,12 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Image from 'next/image';
+
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Textarea } from '@/components/ui/textarea';
 import { resolveAssetImage } from '@/lib/images';
 import type { ModalTarget } from '@/types/approver/modals';
 
@@ -30,9 +33,23 @@ export default function ConfirmApprover({
   type = 'peminjaman',
 }: Props) {
   const [note, setNote] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!open) {
+      const t = setTimeout(() => {
+        setNote('');
+        setError(null);
+      }, 0);
+      return () => clearTimeout(t);
+    }
+  }, [open]);
 
   const showNoteField =
-    type === 'peminjaman' && (action === 'approve' || action === 'reject');
+    (type === 'peminjaman' ||
+      type === 'permintaan' ||
+      type === 'office-supplies') &&
+    (action === 'approve' || action === 'reject');
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex max-h-[85vh] max-w-lg flex-col overflow-hidden rounded-md bg-white dark:bg-neutral-900">
@@ -204,23 +221,32 @@ export default function ConfirmApprover({
           );
         })()}
 
-        {/* {showNoteField && (
-          <div className="">
-            <label className="text-sm text-neutral-500 mb-1 block">
-              Catatan (opsional)
+        {showNoteField && (
+          <div className="mb-2">
+            <label className="mb-1 block text-sm text-neutral-500">
+              Catatan{' '}
+              {action === 'reject' ? (
+                <span className="text-red-500">*</span>
+              ) : (
+                '(opsional)'
+              )}
             </label>
             <Textarea
               value={note}
-              onChange={(e) => setNote(e.target.value)}
+              onChange={e => {
+                setNote(e.target.value);
+                if (e.target.value.trim()) setError(null);
+              }}
               placeholder={
-                action === "approve"
-                  ? "Tambahkan catatan persetujuan..."
-                  : "Tambahkan alasan penolakan..."
+                action === 'approve'
+                  ? 'Tambahkan catatan persetujuan...'
+                  : 'Tambahkan alasan penolakan...'
               }
-              className="min-h-[80px]"
+              className={`min-h-[80px] ${error ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
             />
+            {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
           </div>
-        )} */}
+        )}
 
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
           {action === 'approve'
@@ -242,7 +268,13 @@ export default function ConfirmApprover({
 
           <Button
             size="sm"
-            onClick={() => onConfirm(showNoteField ? note : undefined)}
+            onClick={() => {
+              if (action === 'reject' && !note.trim()) {
+                setError('Catatan alasan penolakan wajib diisi.');
+                return;
+              }
+              onConfirm(showNoteField ? note : undefined);
+            }}
             className={
               (action === 'approve'
                 ? 'cursor-pointer text-white'

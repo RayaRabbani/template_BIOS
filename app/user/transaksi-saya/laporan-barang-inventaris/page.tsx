@@ -79,7 +79,7 @@ export default function HistoryPage() {
   const [search, setSearch] = useState('');
   const [openApproval, setOpenApproval] = useState(false);
   const [filterStatus, setFilterStatus] = useState<
-    'all' | 'pending' | 'approved' | 'rejected' | 'completed'
+    'all' | 'pending' | 'approved' | 'rejected' | 'completed' | 'diterima'
   >('all');
   const [filterType, setFilterType] = useState<
     'all' | 'peminjaman' | 'permintaan'
@@ -175,6 +175,8 @@ export default function HistoryPage() {
               status = 'rejected';
             } else if (apiStatus === 'selesai' || apiStatus === 'completed') {
               status = 'completed';
+            } else if (apiStatus === 'diterima') {
+              status = 'diterima';
             } else if (apiStatus === 'disetujui' || apiStatus === 'approved') {
               status = 'approved';
             } else if (
@@ -370,6 +372,8 @@ export default function HistoryPage() {
     switch (status) {
       case 'approved':
         return 'text-white';
+      case 'diterima':
+        return 'bg-green-100/70 text-green-800 dark:bg-green-900/30 dark:text-green-300';
       case 'pending':
         return 'bg-yellow-100/70 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
       case 'rejected':
@@ -509,6 +513,7 @@ export default function HistoryPage() {
                               | 'approved'
                               | 'rejected'
                               | 'completed'
+                              | 'diterima'
                           )
                         }
                       >
@@ -520,6 +525,7 @@ export default function HistoryPage() {
                           <SelectItem value="all">Semua</SelectItem>
                           <SelectItem value="pending">Pending</SelectItem>
                           <SelectItem value="approved">Disetujui</SelectItem>
+                          <SelectItem value="diterima">Diterima</SelectItem>
                           <SelectItem value="rejected">Dibatalkan</SelectItem>
                           <SelectItem value="completed">Selesai</SelectItem>
                         </SelectContent>
@@ -913,7 +919,6 @@ export default function HistoryPage() {
                                       .toString()
                                       .toLowerCase();
 
-                                    
                                     if (
                                       (item.status_konfirmasi?.toLowerCase() ===
                                         'dikonfirmasi' ||
@@ -940,6 +945,7 @@ export default function HistoryPage() {
                                       s.includes('disetujui')
                                     )
                                       return 'Disetujui';
+                                    if (s === 'diterima') return 'Diterima';
                                     if (
                                       s.includes('diajukan') ||
                                       s.includes('pending')
@@ -1079,7 +1085,9 @@ export default function HistoryPage() {
                               ? 'Selesai'
                               : item.status === 'approved'
                                 ? 'Disetujui'
-                                : 'Menunggu';
+                                : item.status === 'diterima'
+                                  ? 'Diterima'
+                                  : 'Menunggu';
                         })()}
                       </span>
                     )}

@@ -157,16 +157,8 @@ export default function ConfirmModal({
             no_badge_approval: leaderBadge,
             nama_approval: leaderName,
             pic_approval: leaderPic || '',
-            tgl_peminjaman: tanggalPinjam
-              ? `${format(tanggalPinjam, 'yyyy-MM-dd')}T${
-                  waktuPinjam || '08:00'
-                }:00.000Z`
-              : '',
-            tgl_pengembalian: tanggalKembali
-              ? `${format(tanggalKembali, 'yyyy-MM-dd')}T${
-                  waktuKembali || '17:00'
-                }:00.000Z`
-              : '',
+            tgl_peminjaman: values.tanggalPinjam || '',
+            tgl_pengembalian: values.tanggalKembali || '',
             catatan: values.catatan || '',
             approval: 'Pending',
           };
@@ -452,7 +444,7 @@ export default function ConfirmModal({
                                   `${format(
                                     d,
                                     'yyyy-MM-dd'
-                                  )}T${waktuPinjam}:00.000Z`
+                                  )}T${waktuPinjam}:00.000+07:00`
                                 );
                                 form.clearErrors('tanggalPinjam');
                                 setTanggalPinjamOpen(false);
@@ -472,7 +464,7 @@ export default function ConfirmModal({
                                     `${format(
                                       tanggalPinjam,
                                       'yyyy-MM-dd'
-                                    )}T${value}:00.000Z`
+                                    )}T${value}:00.000+07:00`
                                   );
                                   form.clearErrors('tanggalPinjam');
                                   setTanggalPinjamOpen(false);
@@ -572,7 +564,7 @@ export default function ConfirmModal({
                                   `${format(
                                     d,
                                     'yyyy-MM-dd'
-                                  )}T${waktuKembali}:00.000Z`
+                                  )}T${waktuKembali}:00.000+07:00`
                                 );
                                 form.clearErrors('tanggalKembali');
                                 setTanggalKembaliOpen(false);
@@ -596,7 +588,7 @@ export default function ConfirmModal({
                                     `${format(
                                       tanggalKembali,
                                       'yyyy-MM-dd'
-                                    )}T${value}:00.000Z`
+                                    )}T${value}:00.000+07:00`
                                   );
                                   form.clearErrors('tanggalKembali');
                                   setTanggalKembaliOpen(false);

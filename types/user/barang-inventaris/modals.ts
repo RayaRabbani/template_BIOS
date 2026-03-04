@@ -5,6 +5,7 @@ export type UIAsset = {
   desc?: string;
   image?: string | null;
   available?: number;
+  pic?: string;
   kompilator_id?: number;
 };
 
@@ -101,11 +102,18 @@ export type DetailApprovalData = {
   requestDate?: string;
   approveDate?: string;
   returnDate?: string | null;
-  status: 'pending' | 'approved' | 'rejected' | 'completed' | 'cancelled';
+  status:
+    | 'pending'
+    | 'approved'
+    | 'rejected'
+    | 'completed'
+    | 'cancelled'
+    | 'diterima';
   variant?: 'default' | 'success' | 'danger';
   approverName?: string;
   approverNip?: string;
   approverAvatar?: string | null;
+  catatan_approval?: string | null;
   item?: Array<{
     id?: string | number;
     nama?: string;

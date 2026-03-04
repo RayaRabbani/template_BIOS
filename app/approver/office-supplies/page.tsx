@@ -112,6 +112,8 @@ export default function HistoryPage() {
   const [confirmTargetId, setConfirmTargetId] = useState<number | null>(null);
   const [confirmLoading, setConfirmLoading] = useState(false);
 
+  const [refreshKey, setRefreshKey] = useState(0);
+
   const [page, setPage] = useState(1);
   const pageSize = 10;
   const totalPages = Math.max(1, Math.ceil(data.length / pageSize));
@@ -221,6 +223,7 @@ export default function HistoryPage() {
               nama_approval: (d.nama_approval as string | null) ?? null,
               no_badge_approval: (d.no_badge_approval as string | null) ?? null,
               pic_approval: (d.pic_approval as string | null) ?? null,
+              catatan_approval: (d.catatan_approval as string | null) ?? null,
               approval_at: (d.approval_at as string | null) ?? null,
               item: Array.isArray(d.item)
                 ? d.item.map((it: Record<string, unknown>) => ({
@@ -288,7 +291,7 @@ export default function HistoryPage() {
     }
 
     loadOfficeSuppliesData();
-  }, [search, filterStatus, appliedPeriod, session?.user?.id]);
+  }, [search, filterStatus, appliedPeriod, session?.user?.id, refreshKey]);
 
   const statusSoftColor = (status: string) => {
     switch (status) {
@@ -318,33 +321,50 @@ export default function HistoryPage() {
   }
 
   async function performConfirm(note?: string) {
-    if (!confirmAction || confirmTargetId == null) return;
+    if (!confirmAction || confirmTargetId == null || !session?.user) return;
     const currentAction = confirmAction;
+
+    const payload = {
+      no_badge_approval: session.user.id || '',
+      nama_approval: session.user.name || '',
+      pic_approval: session.user.image || '',
+      catatan_approval: note || '',
+    };
+
     try {
       setConfirmLoading(true);
 
       let apiResult;
       if (currentAction === 'approve') {
-        apiResult = await approveOfficeSuppliesRequest(confirmTargetId);
+        apiResult = await approveOfficeSuppliesRequest(
+          confirmTargetId,
+          payload
+        );
         if (apiResult.statusCode === 200 || apiResult.statusCode === 201) {
           setData(d =>
             d.map(it =>
-              it.id === confirmTargetId ? { ...it, status: 'approved' } : it
+              it.id === confirmTargetId
+                ? { ...it, status: 'approved', catatan: note }
+                : it
             )
           );
           toast.success('Permintaan berhasil disetujui');
+          setRefreshKey(prev => prev + 1);
         } else {
           throw new Error(apiResult.message || 'Gagal menyetujui permintaan');
         }
       } else if (currentAction === 'reject') {
-        apiResult = await rejectOfficeSuppliesRequest(confirmTargetId);
+        apiResult = await rejectOfficeSuppliesRequest(confirmTargetId, payload);
         if (apiResult.statusCode === 200 || apiResult.statusCode === 201) {
           setData(d =>
             d.map(it =>
-              it.id === confirmTargetId ? { ...it, status: 'rejected' } : it
+              it.id === confirmTargetId
+                ? { ...it, status: 'rejected', catatan: note }
+                : it
             )
           );
           toast.success('Permintaan berhasil ditolak');
+          setRefreshKey(prev => prev + 1);
         } else {
           throw new Error(apiResult.message || 'Gagal menolak permintaan');
         }
@@ -426,7 +446,7 @@ export default function HistoryPage() {
                 placeholder="Filter..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                className="h-8 w-full rounded-md rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-black placeholder-gray-500 hover:bg-gray-50 focus:border-[#01793b] focus:ring-1 focus:ring-[#01793b] focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white dark:placeholder-neutral-400 dark:hover:bg-neutral-700"
+                className="h-8 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-black placeholder-gray-500 hover:bg-gray-50 focus:border-[#01793b] focus:ring-1 focus:ring-[#01793b] focus:outline-none dark:border-neutral-600 dark:bg-neutral-800 dark:text-white dark:placeholder-neutral-400 dark:hover:bg-neutral-700"
               />
             </div>
 
@@ -771,7 +791,7 @@ export default function HistoryPage() {
                                 <AvatarImage
                                   src={item.pic ?? '/images/avatar-pic.jpg'}
                                   alt={item.employee ?? 'avatar'}
-                                  className="object-cover object-top w-full h-full"
+                                  className="h-full w-full object-cover object-top"
                                 />
                                 <AvatarFallback className="rounded-full">
                                   {item.employee

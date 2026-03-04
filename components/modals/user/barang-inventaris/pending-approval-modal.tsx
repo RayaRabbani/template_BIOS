@@ -443,6 +443,8 @@ export default function PendingApprovalModal({
                                         item.pic_approval !== '-'
                                           ? item.pic_approval
                                           : undefined,
+                                      catatan_approval:
+                                        item.catatan_approval ?? undefined,
                                       item: Array.isArray(item.item)
                                         ? item.item.map(it => ({
                                             id: it.id,
@@ -630,6 +632,8 @@ export default function PendingApprovalModal({
                                         item.pic_approval !== '-'
                                           ? item.pic_approval
                                           : undefined,
+                                      catatan_approval:
+                                        item.catatan_approval ?? undefined,
                                       item: Array.isArray(item.item)
                                         ? item.item.map(it => ({
                                             id: it.id,

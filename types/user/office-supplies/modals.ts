@@ -79,6 +79,7 @@ export type DetailApprovalData = {
   approverName?: string;
   approverNip?: string;
   approverAvatar?: string | null;
+  catatan_approval?: string | null;
   item?: Array<{
     id?: string | number;
     nama?: string;

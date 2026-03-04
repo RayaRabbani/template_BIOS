@@ -10,6 +10,10 @@ declare module 'next-auth' {
       image?: string | null;
       roles: string[];
       groups: string[];
+      no_badge?: string;
+      noBadge?: string;
+      nama?: string;
+      pic?: string;
     };
     expires: string;
     accessToken: string;
