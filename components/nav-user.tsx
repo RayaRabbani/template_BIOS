@@ -1,5 +1,7 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+
 import {
   BadgeCheck,
   Bell,
@@ -8,6 +10,7 @@ import {
   LogOut,
   Sparkles,
 } from 'lucide-react';
+import { signOut, useSession } from 'next-auth/react';
 
 import {
   DropdownMenu,
@@ -24,8 +27,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { signOut } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 
 export function NavUser({
   user,
@@ -37,7 +38,7 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
-  // const user_data:any = session?.user;
+  const { data: session } = useSession();
   const router = useRouter();
 
   return (
@@ -96,7 +97,7 @@ export function NavUser({
             <DropdownMenuItem
               onClick={() => {
                 void signOut({ redirect: false }).then(() => {
-                    router.push("/");
+                  router.push("/");
                 });
               }}
             >
