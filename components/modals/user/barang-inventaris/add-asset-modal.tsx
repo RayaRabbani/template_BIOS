@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
 import {
   Tooltip,
@@ -102,6 +103,29 @@ export function AddAssetModal({
       notes: notes,
     },
   });
+
+  useEffect(() => {
+    if (!open) {
+      form.reset({
+        name: '',
+        qty: '',
+        notes: '',
+      });
+      setSelectedAsset(null);
+      setName('');
+      setQty('');
+      setNotes('');
+      setPreviewAsset(null);
+    }
+  }, [open, form]);
+
+  useEffect(() => {
+    if (open && item) {
+      setSelectedAsset(item);
+      setName(item.name || '');
+      form.setValue('name', item.name || '');
+    }
+  }, [open, item, form]);
 
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
@@ -346,7 +370,18 @@ export function AddAssetModal({
 
           <ScrollArea className="max-h-[55vh]">
             <div className="space-y-4 px-6 py-0">
-              {noData ? (
+              {loadingAssets ? (
+                <div className="space-y-4">
+                  <Skeleton className="h-4 w-1/3" />
+                  <div className="flex w-full flex-col overflow-hidden rounded-md border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
+                    <Skeleton className="h-56 w-full" />
+                    <div className="space-y-2 p-3">
+                      <Skeleton className="h-5 w-3/4" />
+                      <Skeleton className="h-4 w-1/4" />
+                    </div>
+                  </div>
+                </div>
+              ) : noData ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center text-neutral-500 sm:py-12">
                   <div className="mb-3 rounded-full bg-neutral-100 p-3 dark:bg-neutral-800">
                     <Inbox size={35} className="opacity-40" />

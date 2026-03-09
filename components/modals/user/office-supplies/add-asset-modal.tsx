@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
 import { createProductCart, getProdukById } from '@/lib/api/user';
 import { resolveAssetImage } from '@/lib/images';
@@ -84,13 +85,30 @@ export default function AddOfficeSupplyModal({
   });
 
   useEffect(() => {
-    form.reset({
-      name: produk?.nama ?? '',
-      qty: form.getValues().qty || '',
-      notes: '',
-      unit: unit || '',
-    });
-  }, [produk, unit, form]);
+    if (!open) {
+      form.reset({
+        name: '',
+        qty: '',
+        notes: '',
+        unit: '',
+      });
+      setProduk(null);
+      setName('');
+      setUnit('');
+      setSelectedUnit(undefined);
+    }
+  }, [open, form]);
+
+  useEffect(() => {
+    if (open && produk) {
+      form.reset({
+        name: produk?.nama ?? '',
+        qty: form.getValues().qty || '',
+        notes: '',
+        unit: unit || '',
+      });
+    }
+  }, [produk, unit, form, open]);
 
   const router = useRouter();
 
@@ -238,285 +256,304 @@ export default function AddOfficeSupplyModal({
 
           <ScrollArea className="max-h-[55vh]">
             <div className="space-y-4 px-6 pt-2 pb-0">
-              <div
-                className="group relative h-54 w-full cursor-zoom-in overflow-hidden rounded-md border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800"
-                onClick={() => setOpenPreview(true)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ') setOpenPreview(true);
-                }}
-              >
-                {imageUrl ? (
-                  <>
-                    <Image
-                      src={safeImage}
-                      alt={name}
-                      fill
-                      unoptimized
-                      className="object-cover"
-                    />
-
-                    <div
-                      className="absolute inset-0 flex cursor-zoom-in items-center justify-center bg-black/30 opacity-0 transition-opacity hover:opacity-100"
-                      onClick={e => {
-                        e.stopPropagation();
+              {loading ? (
+                <div className="space-y-4">
+                  <Skeleton className="h-56 w-full rounded-md" />
+                  <div className="space-y-3">
+                    <Skeleton className="h-4 w-1/4" />
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-4 w-1/4" />
+                    <Skeleton className="h-24 w-full" />
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div
+                    className="group relative h-54 w-full cursor-zoom-in overflow-hidden rounded-md border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800"
+                    onClick={() => setOpenPreview(true)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ')
                         setOpenPreview(true);
-                      }}
-                    >
-                      <ZoomIn size={28} className="text-white" />
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex h-full items-center justify-center text-neutral-400">
-                    No Image
-                  </div>
-                )}
-              </div>
-
-              <Dialog open={openPreview} onOpenChange={setOpenPreview}>
-                <DialogContent className="max-w-4xl border-none bg-transparent p-0 [&>button]:hidden">
-                  <DialogHeader>
-                    <VisuallyHidden>
-                      <DialogTitle className="sr-only">
-                        Preview of {name}
-                      </DialogTitle>
-                    </VisuallyHidden>
-                  </DialogHeader>
-
-                  <div className="relative h-[80vh] w-full">
-                    <Image
-                      src={safeImage}
-                      alt={name}
-                      fill
-                      priority
-                      className="cursor-zoom-out object-contain"
-                      onClick={() => setOpenPreview(false)}
-                    />
-                  </div>
-                </DialogContent>
-              </Dialog>
-
-              <div className="space-y-3">
-                <Form {...form}>
-                  <form
-                    onSubmit={e => {
-                      e.preventDefault();
-                      form.handleSubmit(handleSubmit)();
                     }}
-                    className="space-y-3"
                   >
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Nama Barang</FormLabel>
-                          <FormControl>
-                            <Input
-                              {...field}
-                              readOnly
-                              placeholder="Nama Barang"
-                              className="dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    {imageUrl ? (
+                      <>
+                        <Image
+                          src={safeImage}
+                          alt={name}
+                          fill
+                          unoptimized
+                          className="object-cover"
+                        />
 
-                    <div className="grid grid-cols-3 items-end gap-3">
-                      <div className="col-span-1">
-                        <label className="text-sm font-medium dark:text-neutral-300">
-                          {' '}
-                          <span className="mr-1 text-red-500">*</span>Satuan
-                          Barang
-                        </label>
-                        <div className="relative">
-                          <Input
-                            readOnly
-                            value={unit || ''}
-                            onClick={() => {
-                              setUnitSearch('');
-                              setSelectedUnit(unit || undefined);
-                              setOpenUnitPicker(true);
-                            }}
-                            placeholder="Pilih Satuan"
-                            className="cursor-pointer pr-9 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
-                          />
-
-                          <input
-                            type="hidden"
-                            {...form.register('unit', {
-                              required: 'Satuan harus dipilih',
-                            })}
-                          />
-                          {form.formState.errors.unit && (
-                            <p className="mt-1 text-xs text-red-500">
-                              {form.formState.errors.unit?.message as string}
-                            </p>
-                          )}
-                        </div>
-                        <Dialog
-                          open={openUnitPicker}
-                          onOpenChange={setOpenUnitPicker}
-                        >
-                          <DialogContent className="w-[92%] max-w-sm overflow-hidden rounded-md border border-neutral-200 bg-white p-0 shadow-xl dark:border-neutral-700 dark:bg-neutral-900">
-                            <div className="border-b border-neutral-100 bg-white px-4 py-3 dark:border-neutral-800">
-                              <DialogTitle className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
-                                Pilih Satuan
-                              </DialogTitle>
-                              <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
-                                Pilih satuan barang
-                              </p>
-                            </div>
-
-                            <div className="max-h-80 space-y-2 overflow-y-auto px-4 py-3">
-                              <Input
-                                placeholder="Search Satuan..."
-                                value={unitSearch}
-                                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                  setUnitSearch(e.target.value)
-                                }
-                                className="h-9 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
-                              />
-
-                              <div className="mt-1 space-y-2">
-                                {units
-                                  .filter(u =>
-                                    u
-                                      .toLowerCase()
-                                      .includes(unitSearch.toLowerCase())
-                                  )
-                                  .map(u => {
-                                    const active = selectedUnit === u;
-                                    return (
-                                      <Button
-                                        key={u}
-                                        variant="ghost"
-                                        onClick={() => setSelectedUnit(u)}
-                                        className={`flex w-full cursor-pointer items-center justify-between rounded-md border px-3 py-2 transition-all ${
-                                          active
-                                            ? 'border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-900 dark:bg-emerald-900/10 dark:text-emerald-100'
-                                            : 'border-neutral-200 hover:border-emerald-100 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:border-emerald-900 dark:hover:bg-neutral-800'
-                                        }`}
-                                      >
-                                        <span className="text-sm font-medium">
-                                          {u}
-                                        </span>
-
-                                        <div
-                                          className={`flex h-5 w-5 items-center justify-center rounded-full border transition-all ${
-                                            active
-                                              ? 'border-emerald-600 bg-emerald-600 text-white'
-                                              : 'border-neutral-300 dark:border-neutral-600'
-                                          }`}
-                                        >
-                                          {active && (
-                                            <svg
-                                              width="12"
-                                              height="12"
-                                              viewBox="0 0 24 24"
-                                              stroke="currentColor"
-                                              strokeWidth="3"
-                                              fill="none"
-                                            >
-                                              <path d="M5 13l4 4L19 7" />
-                                            </svg>
-                                          )}
-                                        </div>
-                                      </Button>
-                                    );
-                                  })}
-                              </div>
-                            </div>
-
-                            <div className="border-t border-neutral-100 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-neutral-900">
-                              <Button
-                                className="w-full cursor-pointer rounded-md bg-[#01793b] text-white hover:bg-[#016c33] dark:bg-[#01793b] dark:text-white dark:hover:bg-[#043014]"
-                                onClick={() => {
-                                  if (selectedUnit) {
-                                    setUnit(selectedUnit);
-                                    form.setValue('unit', selectedUnit);
-                                    form.clearErrors('unit');
-                                  }
-                                  setOpenUnitPicker(false);
-                                }}
-                              >
-                                Pilih
-                              </Button>
-                            </div>
-                          </DialogContent>
-                        </Dialog>
-                      </div>
-
-                      <div className="col-span-2">
-                        <Controller
-                          control={form.control}
-                          name="qty"
-                          rules={{
-                            required: 'Qty harus lebih besar dari 0',
-                            validate: v =>
-                              Number(v) > 0 || 'Qty harus lebih besar dari 0',
+                        <div
+                          className="absolute inset-0 flex cursor-zoom-in items-center justify-center bg-black/30 opacity-0 transition-opacity hover:opacity-100"
+                          onClick={e => {
+                            e.stopPropagation();
+                            setOpenPreview(true);
                           }}
-                          render={({ field, fieldState }) => (
-                            <div>
-                              <label className="text-sm font-medium dark:text-neutral-300">
-                                <span className="mr-1 text-red-500">*</span>Qty
-                              </label>
+                        >
+                          <ZoomIn size={28} className="text-white" />
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-neutral-400">
+                        No Image
+                      </div>
+                    )}
+                  </div>
+
+                  <Dialog open={openPreview} onOpenChange={setOpenPreview}>
+                    <DialogContent className="max-w-4xl border-none bg-transparent p-0 [&>button]:hidden">
+                      <DialogHeader>
+                        <VisuallyHidden>
+                          <DialogTitle className="sr-only">
+                            Preview of {name}
+                          </DialogTitle>
+                        </VisuallyHidden>
+                      </DialogHeader>
+
+                      <div className="relative h-[80vh] w-full">
+                        <Image
+                          src={safeImage}
+                          alt={name}
+                          fill
+                          priority
+                          className="cursor-zoom-out object-contain"
+                          onClick={() => setOpenPreview(false)}
+                        />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+
+                  <div className="space-y-3">
+                    <Form {...form}>
+                      <form
+                        onSubmit={e => {
+                          e.preventDefault();
+                          form.handleSubmit(handleSubmit)();
+                        }}
+                        className="space-y-3"
+                      >
+                        <FormField
+                          control={form.control}
+                          name="name"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Nama Barang</FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  readOnly
+                                  placeholder="Nama Barang"
+                                  className="dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <div className="grid grid-cols-3 items-end gap-3">
+                          <div className="col-span-1">
+                            <label className="text-sm font-medium dark:text-neutral-300">
+                              <span className="mr-1 text-red-500">*</span>Satuan
+                              Barang
+                            </label>
+                            <div className="relative">
                               <Input
-                                {...field}
-                                type="number"
-                                min={1}
-                                onChange={(
-                                  e: ChangeEvent<HTMLInputElement>
-                                ) => {
-                                  const v = e.target.value;
-                                  if (v === '') {
-                                    field.onChange('');
-                                    return;
-                                  }
-                                  const n = Number(v);
-                                  if (!Number.isFinite(n) || isNaN(n)) {
-                                    field.onChange('');
-                                    return;
-                                  }
-                                  field.onChange(String(n));
+                                readOnly
+                                value={unit || ''}
+                                onClick={() => {
+                                  setUnitSearch('');
+                                  setSelectedUnit(unit || undefined);
+                                  setOpenUnitPicker(true);
                                 }}
-                                placeholder="Qty"
-                                className="dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+                                placeholder="Pilih Satuan"
+                                className="cursor-pointer pr-9 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
                               />
-                              {fieldState.error && (
+
+                              <input
+                                type="hidden"
+                                {...form.register('unit', {
+                                  required: 'Satuan harus dipilih',
+                                })}
+                              />
+                              {form.formState.errors.unit && (
                                 <p className="mt-1 text-xs text-red-500">
-                                  {fieldState.error.message}
+                                  {
+                                    form.formState.errors.unit
+                                      ?.message as string
+                                  }
                                 </p>
                               )}
                             </div>
+                            <Dialog
+                              open={openUnitPicker}
+                              onOpenChange={setOpenUnitPicker}
+                            >
+                              <DialogContent className="w-[92%] max-w-sm overflow-hidden rounded-md border border-neutral-200 bg-white p-0 shadow-xl dark:border-neutral-700 dark:bg-neutral-900">
+                                <div className="border-b border-neutral-100 bg-white px-4 py-3 dark:border-neutral-800">
+                                  <DialogTitle className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
+                                    Pilih Satuan
+                                  </DialogTitle>
+                                  <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                                    Pilih satuan barang
+                                  </p>
+                                </div>
+
+                                <div className="max-h-80 space-y-2 overflow-y-auto px-4 py-3">
+                                  <Input
+                                    placeholder="Search Satuan..."
+                                    value={unitSearch}
+                                    onChange={(
+                                      e: ChangeEvent<HTMLInputElement>
+                                    ) => setUnitSearch(e.target.value)}
+                                    className="h-9 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+                                  />
+
+                                  <div className="mt-1 space-y-2">
+                                    {units
+                                      .filter(u =>
+                                        u
+                                          .toLowerCase()
+                                          .includes(unitSearch.toLowerCase())
+                                      )
+                                      .map(u => {
+                                        const active = selectedUnit === u;
+                                        return (
+                                          <Button
+                                            key={u}
+                                            variant="ghost"
+                                            onClick={() => setSelectedUnit(u)}
+                                            className={`flex w-full cursor-pointer items-center justify-between rounded-md border px-3 py-2 transition-all ${
+                                              active
+                                                ? 'border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-900 dark:bg-emerald-900/10 dark:text-emerald-100'
+                                                : 'border-neutral-200 hover:border-emerald-100 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:border-emerald-900 dark:hover:bg-neutral-800'
+                                            }`}
+                                          >
+                                            <span className="text-sm font-medium">
+                                              {u}
+                                            </span>
+
+                                            <div
+                                              className={`flex h-5 w-5 items-center justify-center rounded-full border transition-all ${
+                                                active
+                                                  ? 'border-emerald-600 bg-emerald-600 text-white'
+                                                  : 'border-neutral-300 dark:border-neutral-600'
+                                              }`}
+                                            >
+                                              {active && (
+                                                <svg
+                                                  width="12"
+                                                  height="12"
+                                                  viewBox="0 0 24 24"
+                                                  stroke="currentColor"
+                                                  strokeWidth="3"
+                                                  fill="none"
+                                                >
+                                                  <path d="M5 13l4 4L19 7" />
+                                                </svg>
+                                              )}
+                                            </div>
+                                          </Button>
+                                        );
+                                      })}
+                                  </div>
+                                </div>
+
+                                <div className="border-t border-neutral-100 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-neutral-900">
+                                  <Button
+                                    className="w-full cursor-pointer rounded-md bg-[#01793b] text-white hover:bg-[#016c33] dark:bg-[#01793b] dark:text-white dark:hover:bg-[#043014]"
+                                    onClick={() => {
+                                      if (selectedUnit) {
+                                        setUnit(selectedUnit);
+                                        form.setValue('unit', selectedUnit);
+                                        form.clearErrors('unit');
+                                      }
+                                      setOpenUnitPicker(false);
+                                    }}
+                                  >
+                                    Pilih
+                                  </Button>
+                                </div>
+                              </DialogContent>
+                            </Dialog>
+                          </div>
+
+                          <div className="col-span-2">
+                            <Controller
+                              control={form.control}
+                              name="qty"
+                              rules={{
+                                required: 'Qty harus lebih besar dari 0',
+                                validate: v =>
+                                  Number(v) > 0 ||
+                                  'Qty harus lebih besar dari 0',
+                              }}
+                              render={({ field, fieldState }) => (
+                                <div>
+                                  <label className="text-sm font-medium dark:text-neutral-300">
+                                    <span className="mr-1 text-red-500">*</span>
+                                    Qty
+                                  </label>
+                                  <Input
+                                    {...field}
+                                    type="number"
+                                    min={1}
+                                    onChange={(
+                                      e: ChangeEvent<HTMLInputElement>
+                                    ) => {
+                                      const v = e.target.value;
+                                      if (v === '') {
+                                        field.onChange('');
+                                        return;
+                                      }
+                                      const n = Number(v);
+                                      if (!Number.isFinite(n) || isNaN(n)) {
+                                        field.onChange('');
+                                        return;
+                                      }
+                                      field.onChange(String(n));
+                                    }}
+                                    placeholder="Qty"
+                                    className="dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+                                  />
+                                  {fieldState.error && (
+                                    <p className="mt-1 text-xs text-red-500">
+                                      {fieldState.error.message}
+                                    </p>
+                                  )}
+                                </div>
+                              )}
+                            />
+                          </div>
+                        </div>
+
+                        <FormField
+                          control={form.control}
+                          name="notes"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Catatan (Opsional)</FormLabel>
+                              <FormControl>
+                                <Textarea
+                                  {...field}
+                                  placeholder="Tambahkan catatan (opsional)"
+                                  className="mb-4 min-h-[80px] dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
                           )}
                         />
-                      </div>
-                    </div>
-
-                    <FormField
-                      control={form.control}
-                      name="notes"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Catatan (Opsional)</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              {...field}
-                              placeholder="Catatan"
-                              className="mb-4 min-h-[80px] dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </form>
-                </Form>
-              </div>
+                      </form>
+                    </Form>
+                  </div>
+                </>
+              )}
             </div>
           </ScrollArea>
 

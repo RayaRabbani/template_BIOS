@@ -1030,7 +1030,7 @@ export default function DetailPage() {
               )}
             </CardContent>
           </Card>
-          {/*minjaman Asset (Hanya untuk tipe peminjaman) */}
+          
           {transaction.type === 'peminjaman' &&
             peminjamanData &&
             peminjamanData.length > 0 && (
@@ -1090,7 +1090,6 @@ export default function DetailPage() {
               </Card>
             )}
 
-          {/* Card Detail Penyerahan Asset - tampil jika tgl_penyerahan tidak null (Hanya untuk tipe permintaan) */}
           {transaction.type === 'permintaan' && tglPenyerahan && (
             <Card className="sticky top-64 mt-4 rounded-md border border-neutral-100 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
               <CardHeader>

@@ -758,7 +758,7 @@ export default function DetailPage() {
         </div>
 
         <div className="col-span-2 lg:col-span-1">
-          <Card className="sticky top-2 rounded-md border border-neutral-100 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+          <Card className="sticky top-0 rounded-md border border-neutral-100 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
             <CardHeader>
               <CardTitle className="text-m dark:text-white">
                 Detail Permintaan Asset
@@ -951,7 +951,6 @@ export default function DetailPage() {
             </CardContent>
           </Card>
 
-          {/* Card Detail Penyerahan Asset - tampil jika tgl_penyerahan tidak null */}
           {tglPenyerahan && (
             <Card className="sticky top-64 mt-4 rounded-md border border-neutral-100 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
               <CardHeader>

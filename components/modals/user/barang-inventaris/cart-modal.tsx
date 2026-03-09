@@ -26,6 +26,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   deleteCartItem,
   getBorrowingCart,
@@ -77,8 +78,10 @@ export default function CartModal({
   const [dirty, setDirty] = useState(false);
   const [openSaveConfirm, setOpenSaveConfirm] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const fetchCart = useCallback(async () => {
+    setLoading(true);
     try {
       const json = isPermintaan
         ? await getRequestCart(NO_BADGE)
@@ -114,8 +117,10 @@ export default function CartModal({
       }
     } catch (err) {
       console.error('Failed to fetch cart:', err);
+    } finally {
+      setLoading(false);
     }
-  }, [isPermintaan, setCart, onRefresh]);
+  }, [isPermintaan, NO_BADGE, setCart, onRefresh]);
 
   useEffect(() => {
     if (!open) return;
@@ -261,7 +266,24 @@ export default function CartModal({
 
           <ScrollArea className="max-h-[60vh] overflow-hidden rounded-md sm:max-h-[65vh]">
             <div className="mt-2 space-y-3 sm:space-y-4">
-              {items.length === 0 && (
+              {loading && (
+                <div className="space-y-3 sm:space-y-4">
+                  {[...Array(3)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="flex w-full items-center gap-3 rounded-md border border-neutral-100 p-3 sm:gap-4 dark:border-neutral-800"
+                    >
+                      <Skeleton className="h-16 w-16 rounded-md sm:h-20 sm:w-20" />
+                      <div className="flex-1 space-y-2">
+                        <Skeleton className="h-4 w-3/4" />
+                        <Skeleton className="h-3 w-1/4" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {!loading && items.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-8 text-center text-neutral-500 sm:py-12">
                   <div className="mb-3 rounded-full bg-neutral-100 p-3 dark:bg-neutral-800">
                     <ClipboardCopy size={35} className="opacity-40" />
@@ -270,111 +292,111 @@ export default function CartModal({
                 </div>
               )}
 
-              {items.map((item: CartItem) => (
-                <div
-                  key={item.id as number}
-                  className={cn(
-                    'group relative flex w-full flex-col items-start justify-between rounded-md border border-neutral-200 bg-white p-3 shadow-sm transition-all hover:border-emerald-200 hover:shadow-md sm:flex-row sm:items-center dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-emerald-900'
-                  )}
-                >
-                  <div className="flex w-full items-start gap-3 sm:gap-4">
-                    <div
-                      className="relative h-16 w-16 flex-shrink-0 cursor-zoom-in overflow-hidden rounded-md border border-neutral-100 bg-neutral-50 sm:h-20 sm:w-20 dark:border-neutral-800 dark:bg-neutral-800"
-                      onClick={() => {
-                        setPreviewImage(
-                          typeof item.image === 'string' ? item.image : null
-                        );
-                        setOpenPreview(true);
-                      }}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter' || e.key === ' ') {
+              {!loading &&
+                items.map((item: CartItem) => (
+                  <div
+                    key={item.id as number}
+                    className={cn(
+                      'group relative flex w-full flex-col items-start justify-between rounded-md border border-neutral-200 bg-white p-3 shadow-sm transition-all hover:border-emerald-200 hover:shadow-md sm:flex-row sm:items-center dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-emerald-900'
+                    )}
+                  >
+                    <div className="flex w-full items-start gap-3 sm:gap-4">
+                      <div
+                        className="relative h-16 w-16 flex-shrink-0 cursor-zoom-in overflow-hidden rounded-md border border-neutral-100 bg-neutral-50 sm:h-20 sm:w-20 dark:border-neutral-800 dark:bg-neutral-800"
+                        onClick={() => {
                           setPreviewImage(
                             typeof item.image === 'string' ? item.image : null
                           );
                           setOpenPreview(true);
-                        }
-                      }}
-                    >
-                      {typeof item.image === 'string' ? (
-                        <Image
-                          src={item.image as string}
-                          width={80}
-                          height={80}
-                          alt={String(item.name)}
-                          className="h-full w-full object-contain p-1"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-[10px] text-neutral-400 dark:text-neutral-500">
-                          No Image
+                        }}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            setPreviewImage(
+                              typeof item.image === 'string' ? item.image : null
+                            );
+                            setOpenPreview(true);
+                          }
+                        }}
+                      >
+                        {typeof item.image === 'string' ? (
+                          <Image
+                            src={item.image as string}
+                            width={80}
+                            height={80}
+                            alt={String(item.name)}
+                            className="h-full w-full object-contain p-1"
+                          />
+                        ) : (
+                          <div className="flex h-full items-center justify-center text-[10px] text-neutral-400 dark:text-neutral-500">
+                            No Image
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="min-w-0 flex-1 pt-0.5">
+                        <h4 className="line-clamp-2 text-sm leading-tight font-semibold text-neutral-900 sm:text-base dark:text-neutral-100">
+                          {String(item.name)}
+                        </h4>
+                        <div className="mt-1.5 flex items-center gap-2 sm:mt-2">
+                          <span className="inline-flex items-center rounded-md bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-600 sm:px-2.5 sm:py-1 sm:text-xs dark:bg-neutral-800 dark:text-neutral-400">
+                            Jumlah: {String(item.qty)}
+                            {item.satuan_nama
+                              ? ` ${String(item.satuan_nama)}`
+                              : ''}
+                          </span>
                         </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-3 flex w-full items-center justify-between border-t border-neutral-50 pt-3 sm:mt-0 sm:w-auto sm:gap-4 sm:border-t-0 sm:pt-0 sm:pr-2 dark:border-neutral-800">
+                      {isPermintaan ? (
+                        <div className="flex items-center gap-1 rounded-full border border-neutral-200 bg-white px-2 py-1 shadow-sm dark:border-neutral-700 dark:bg-neutral-800">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => decreaseQty(item.id as number)}
+                            disabled={Number(item.qty) <= 1}
+                            className={cn(
+                              'h-7 w-7 rounded-full transition-colors hover:bg-neutral-100 sm:h-8 sm:w-8 dark:hover:bg-neutral-700',
+                              Number(item.qty) <= 1
+                                ? 'cursor-not-allowed opacity-30'
+                                : 'cursor-pointer'
+                            )}
+                          >
+                            <Minus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                          </Button>
+                          <span className="min-w-[1.2rem] text-center text-xs font-semibold text-neutral-900 tabular-nums sm:min-w-[1.5rem] sm:text-sm dark:text-neutral-100">
+                            {String(item.qty)}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => increaseQty(item.id as number)}
+                            className="h-7 w-7 cursor-pointer rounded-full transition-colors hover:bg-neutral-100 sm:h-8 sm:w-8 dark:hover:bg-neutral-700"
+                          >
+                            <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div /> // Spacer for flex-between
                       )}
-                    </div>
-
-                    <div className="min-w-0 flex-1 pt-0.5">
-                      <h4 className="line-clamp-2 text-sm leading-tight font-semibold text-neutral-900 sm:text-base dark:text-neutral-100">
-                        {String(item.name)}
-                      </h4>
-                      <div className="mt-1.5 flex items-center gap-2 sm:mt-2">
-                        <span className="inline-flex items-center rounded-md bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-600 sm:px-2.5 sm:py-1 sm:text-xs dark:bg-neutral-800 dark:text-neutral-400">
-                          Jumlah: {String(item.qty)}
-                          {item.satuan_nama
-                            ? ` ${String(item.satuan_nama)}`
-                            : ''}
-                        </span>
-                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setDeleteTargetId(item.id as number);
+                          setOpenDeleteConfirm(true);
+                        }}
+                        disabled={deletingIds.includes(item.id as number)}
+                        className="h-8 w-8 cursor-pointer rounded-full bg-red-50 text-red-600 transition-colors hover:bg-red-100 hover:text-red-700 sm:h-9 sm:w-9 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/40"
+                      >
+                        <Trash className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
+                      </Button>
                     </div>
                   </div>
-
-                  {/* Actions Area */}
-                  <div className="mt-3 flex w-full items-center justify-between border-t border-neutral-50 pt-3 sm:mt-0 sm:w-auto sm:gap-4 sm:border-t-0 sm:pt-0 sm:pr-2 dark:border-neutral-800">
-                    {isPermintaan ? (
-                      <div className="flex items-center gap-1 rounded-full border border-neutral-200 bg-white px-2 py-1 shadow-sm dark:border-neutral-700 dark:bg-neutral-800">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => decreaseQty(item.id as number)}
-                          disabled={Number(item.qty) <= 1}
-                          className={cn(
-                            'h-7 w-7 rounded-full transition-colors hover:bg-neutral-100 sm:h-8 sm:w-8 dark:hover:bg-neutral-700',
-                            Number(item.qty) <= 1
-                              ? 'cursor-not-allowed opacity-30'
-                              : 'cursor-pointer'
-                          )}
-                        >
-                          <Minus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                        </Button>
-                        <span className="min-w-[1.2rem] text-center text-xs font-semibold text-neutral-900 tabular-nums sm:min-w-[1.5rem] sm:text-sm dark:text-neutral-100">
-                          {String(item.qty)}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => increaseQty(item.id as number)}
-                          className="h-7 w-7 cursor-pointer rounded-full transition-colors hover:bg-neutral-100 sm:h-8 sm:w-8 dark:hover:bg-neutral-700"
-                        >
-                          <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                        </Button>
-                      </div>
-                    ) : (
-                      <div /> // Spacer for flex-between
-                    )}
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => {
-                        setDeleteTargetId(item.id as number);
-                        setOpenDeleteConfirm(true);
-                      }}
-                      disabled={deletingIds.includes(item.id as number)}
-                      className="h-8 w-8 cursor-pointer rounded-full bg-red-50 text-red-600 transition-colors hover:bg-red-100 hover:text-red-700 sm:h-9 sm:w-9 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/40"
-                    >
-                      <Trash className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
+                ))}
             </div>
           </ScrollArea>
 
